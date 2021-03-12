@@ -1,0 +1,7 @@
+override_platforms:
+  firefox:
+    settings:
+      arguments: -headless
+  chrome:
+    settings:
+      arguments: --no-sanbox --headless

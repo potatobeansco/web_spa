@@ -1,0 +1,17 @@
+name: spa
+description: PotatoBeans SPA framework.
+version: 1.0.0-alpha.1
+author: Sergio Ryan <sergioryan@potatobeans.id>
+
+environment:
+  sdk: '>=2.12.0 <3.0.0'
+
+dependencies:
+  meta: any
+  path: any
+  test: any
+
+dev_dependencies:
+  build_runner: ^1.11.0
+  build_web_compilers: ^2.16.0
+  pedantic: ^1.11.0
