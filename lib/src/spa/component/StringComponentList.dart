@@ -5,7 +5,7 @@ part of '../../../spa.dart';
 /// will return all the components string representation concatenated together.
 /// This is useful to create a list of HTML elements for example.
 class StringComponentList<T extends StringComponent> extends ListBase<T> {
-  final List<T> _l = [];
+  final List<T?> _l = [];
 
   @override
   int get length => _l.length;
@@ -15,7 +15,7 @@ class StringComponentList<T extends StringComponent> extends ListBase<T> {
 
   @override
   T operator [](int index) {
-    return _l[index];
+    return _l[index] as T;
   }
 
   @override
