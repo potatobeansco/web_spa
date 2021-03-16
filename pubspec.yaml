@@ -1,6 +1,6 @@
 name: spa
 description: PotatoBeans SPA framework.
-version: 1.0.0-alpha.1
+version: 1.0.0-alpha.2
 author: Sergio Ryan <sergioryan@potatobeans.id>
 
 environment:

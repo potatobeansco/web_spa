@@ -33,10 +33,10 @@ class Route {
     };
     var fillerFunctionVoid = () async {};
 
-    beforeRender ??= fillerFunctionBool;
-    afterRender ??= fillerFunctionVoid;
-    beforeUnrender ??= fillerFunctionBool;
-    afterUnrender ??= fillerFunctionVoid;
+    this.beforeRender = beforeRender ?? fillerFunctionBool;
+    this.afterRender = afterRender ?? fillerFunctionVoid;
+    this.beforeUnrender = beforeUnrender ?? fillerFunctionBool;
+    this.afterUnrender = afterUnrender ?? fillerFunctionVoid;
   }
 }
 
