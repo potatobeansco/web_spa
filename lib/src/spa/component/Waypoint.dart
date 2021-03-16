@@ -72,7 +72,6 @@ class Waypoint {
     }
 
     _onScrollSubs = document.onScroll.listen((event) {
-      print('top: ${_element.getBoundingClientRect().top}, offset: $_offset, innerHeight: ${window.innerHeight}');
       if ((_element.getBoundingClientRect().top + _offset) <= window.innerHeight!) {
         _handler();
       }
