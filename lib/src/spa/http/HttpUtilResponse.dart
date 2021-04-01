@@ -13,8 +13,8 @@ class HttpUtilResponse {
     }
 
     try {
-      Map<String, dynamic> temp = body;
-      return temp;
+      Map<dynamic, dynamic> temp = body;
+      return { for (var e in temp.entries) e.key.toString() : e.value };
     } catch (e) {
       throw FormatException('body cannot be casted as Map<String, dynamic> (JSON map), type is: ${body.runtimeType}');
     }
