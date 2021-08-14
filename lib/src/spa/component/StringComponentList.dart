@@ -4,8 +4,8 @@ part of '../../../spa.dart';
 /// The only difference with normal List is the toString function, which
 /// will return all the components string representation concatenated together.
 /// This is useful to create a list of HTML elements for example.
-class StringComponentList<T extends StringComponent> extends ListBase<T> {
-  final List<T?> _l = [];
+class StringComponentList<T extends StringComponent> extends ListBase<T> with MEventHandler {
+  final List<T> _l = [];
 
   @override
   int get length => _l.length;
@@ -15,7 +15,7 @@ class StringComponentList<T extends StringComponent> extends ListBase<T> {
 
   @override
   T operator [](int index) {
-    return _l[index] as T;
+    return _l[index];
   }
 
   @override
@@ -31,5 +31,20 @@ class StringComponentList<T extends StringComponent> extends ListBase<T> {
     });
 
     return retval;
+  }
+
+  @override
+  void loadEventHandlers() {
+    _l.forEach((element) {
+      element.loadEventHandlers();
+    });
+  }
+
+  @override
+  void unloadEventHandlers() {
+    super.unloadEventHandlers();
+    _l.forEach((element) {
+      element.unloadEventHandlers();
+    });
   }
 }

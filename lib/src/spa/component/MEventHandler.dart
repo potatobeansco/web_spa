@@ -1,7 +1,7 @@
 part of '../../../spa.dart';
 
 /// Event handler capability for derivative of [Component].
-mixin MEventHandler on Component {
+mixin MEventHandler {
   final List<StreamSubscription> _eventSubscriptions = [];
 
   /// Creates an onClick event on [node].
