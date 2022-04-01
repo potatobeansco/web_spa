@@ -136,4 +136,14 @@ abstract class ListRenderer<T, C extends RenderComponent> extends BaseRouter wit
   void operator []=(int index, T value) {
     _model[index] = value;
   }
+  
+  @override
+  void add(T value) {
+    _model.add(value);
+  }
+  
+  @override
+  void addAll(Iterable<T> iterable) {
+    _model.addAll(iterable);
+  }
 }
