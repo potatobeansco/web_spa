@@ -3,8 +3,10 @@ part of spa;
 typedef OnProgressFunc = void Function(int? loaded, int? total);
 
 class HttpUtil {
-  static const HEADER_ACCEPT_JSON = {'Accept': 'application/json'};
+  static const headerAcceptJson = {'Accept': 'application/json'};
+  @Deprecated('renamed to headerContentTypeJson')
   static const headerTypeJson = {'Content-Type': 'application/json'};
+  static const headerContentTypeJson = {'Content-Type': 'application/json'};
 
   static Future<HttpUtilResponse> get(String url, {List<int> expectedStatusCodes = const [200], Map<String, String> requestHeaders = const {}, String responseType = '', OnProgressFunc? onProgress}) {
     var completer = Completer<HttpUtilResponse>();
@@ -24,7 +26,8 @@ class HttpUtil {
     }
 
     req.onLoad.listen((event) {
-      var response = HttpUtilResponse(req.status, req.response, req.getResponseHeader('Content-Type'));
+      var length = req.getResponseHeader('Content-Length');
+      var response = HttpUtilResponse(req.status, req.response, req.getResponseHeader('Content-Type'), length != null ? int.tryParse(length) : null);
       if (expectedStatusCodes.contains(req.status)) {
         completer.complete(response);
       } else {
@@ -33,7 +36,7 @@ class HttpUtil {
     });
 
     req.onError.listen((event) {
-      completer.completeError(HttpUtilConnectionException());
+      completer.completeError(HttpUtilConnectionException(event.lengthComputable, loaded: event.loaded, total: event.total));
     });
 
     req.send();
@@ -64,7 +67,8 @@ class HttpUtil {
     }
 
     req.onLoad.listen((event) {
-      var response = HttpUtilResponse(req.status, req.response, req.getResponseHeader('Content-Type'));
+      var length = req.getResponseHeader('Content-Length');
+      var response = HttpUtilResponse(req.status, req.response, req.getResponseHeader('Content-Type'), length != null ? int.tryParse(length) : null);
       if (expectedStatusCodes.contains(req.status)) {
         completer.complete(response);
       } else {
@@ -73,7 +77,7 @@ class HttpUtil {
     });
 
     req.onError.listen((event) {
-      completer.completeError(HttpUtilConnectionException());
+      completer.completeError(HttpUtilConnectionException(event.lengthComputable, loaded: event.loaded, total: event.total));
     });
 
     req.send(body);
@@ -104,7 +108,8 @@ class HttpUtil {
     }
 
     req.onLoad.listen((event) {
-      var response = HttpUtilResponse(req.status, req.response, req.getResponseHeader('Content-Type'));
+      var length = req.getResponseHeader('Content-Length');
+      var response = HttpUtilResponse(req.status, req.response, req.getResponseHeader('Content-Type'), length != null ? int.tryParse(length) : null);
       if (expectedStatusCodes.contains(req.status)) {
         completer.complete(response);
       } else {
@@ -113,7 +118,7 @@ class HttpUtil {
     });
 
     req.onError.listen((event) {
-      completer.completeError(HttpUtilConnectionException());
+      completer.completeError(HttpUtilConnectionException(event.lengthComputable, loaded: event.loaded, total: event.total));
     });
 
     req.send(body);
@@ -144,7 +149,8 @@ class HttpUtil {
     }
 
     req.onLoad.listen((event) {
-      var response = HttpUtilResponse(req.status, req.response, req.getResponseHeader('Content-Type'));
+      var length = req.getResponseHeader('Content-Length');
+      var response = HttpUtilResponse(req.status, req.response, req.getResponseHeader('Content-Type'), length != null ? int.tryParse(length) : null);
       if (expectedStatusCodes.contains(req.status)) {
         completer.complete(response);
       } else {
@@ -153,7 +159,7 @@ class HttpUtil {
     });
 
     req.onError.listen((event) {
-      completer.completeError(HttpUtilConnectionException());
+      completer.completeError(HttpUtilConnectionException(event.lengthComputable, loaded: event.loaded, total: event.total));
     });
 
     req.send(body);
@@ -184,7 +190,8 @@ class HttpUtil {
     }
 
     req.onLoad.listen((event) {
-      var response = HttpUtilResponse(req.status, req.response, req.getResponseHeader('Content-Type'));
+      var length = req.getResponseHeader('Content-Length');
+      var response = HttpUtilResponse(req.status, req.response, req.getResponseHeader('Content-Type'), length != null ? int.tryParse(length) : null);
       if (expectedStatusCodes.contains(req.status)) {
         completer.complete(response);
       } else {
@@ -193,7 +200,7 @@ class HttpUtil {
     });
 
     req.onError.listen((event) {
-      completer.completeError(HttpUtilConnectionException());
+      completer.completeError(HttpUtilConnectionException(event.lengthComputable, loaded: event.loaded, total: event.total));
     });
 
     req.send(body);
@@ -218,7 +225,8 @@ class HttpUtil {
     }
 
     req.onLoad.listen((event) {
-      var response = HttpUtilResponse(req.status, req.response, req.getResponseHeader('Content-Type'));
+      var length = req.getResponseHeader('Content-Length');
+      var response = HttpUtilResponse(req.status, req.response, req.getResponseHeader('Content-Type'), length != null ? int.tryParse(length) : null);
       if (expectedStatusCodes.contains(req.status)) {
         completer.complete(response);
       } else {
@@ -227,7 +235,7 @@ class HttpUtil {
     });
 
     req.onError.listen((event) {
-      completer.completeError(HttpUtilConnectionException());
+      completer.completeError(HttpUtilConnectionException(event.lengthComputable, loaded: event.loaded, total: event.total));
     });
 
     req.send();

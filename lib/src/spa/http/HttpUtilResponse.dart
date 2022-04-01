@@ -2,34 +2,36 @@ part of spa;
 
 class HttpUtilResponse {
   int? statusCode;
-  dynamic body;
+  Object? body;
   String? contentType;
+  int? contentLength;
 
-  HttpUtilResponse(this.statusCode, this.body, this.contentType);
+  HttpUtilResponse(this.statusCode, this.body, this.contentType, this.contentLength);
 
-  Map<String, dynamic> asJson() {
+  Map<String, Object?> asJson() {
     if (body is String) {
-      return json.decode(body);
+      return json.decode(body as String);
     }
 
     try {
-      Map<dynamic, dynamic> temp = body;
-      return { for (var e in temp.entries) e.key.toString() : e.value };
+      var temp = body as Map<dynamic, dynamic>;
+      return Map<String, Object?>.from(temp);
     } catch (e) {
-      throw FormatException('body cannot be casted as Map<String, dynamic> (JSON map), type is: ${body.runtimeType}');
+      throw FormatException('body cannot be casted as Map<String, Object?> (JSON map), type is: ${body.runtimeType}');
     }
   }
 
-  List<dynamic> asJsonList() {
+  /// Returns a JSON array representation from response body.
+  List<Object?> asJsonList() {
     if (body is String) {
-      return json.decode(body);
+      return json.decode(body as String);
     }
 
     try {
-      List<dynamic> temp = body;
-      return temp;
+      var temp = body as List<dynamic>;
+      return List<Object?>.from(temp);
     } catch (e) {
-      throw FormatException('body cannot be casted as List<dynamic> (JSON list), type is: ${body.runtimeType}');
+      throw FormatException('body cannot be casted as List<Object?> (JSON list), type is: ${body.runtimeType}');
     }
   }
 }
