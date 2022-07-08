@@ -98,7 +98,7 @@ abstract class Component {
   /// id="" tag or not. The given [id] should exist in [baseInnerHtml] as
   /// id="$id" attribute. This will keep this class in sync with the real DOM.
   Component(String id, String baseInnerHtml) {
-    assert(id == '');
+    if (id == '') throw ArgumentError('Must not be empty', 'id');
     _id = id;
     this.baseInnerHtml = baseInnerHtml;
   }
@@ -113,7 +113,7 @@ abstract class Component {
   /// can't be done because it needs you to supply [baseInnerHtml] string
   /// beforehand.
   Component.empty(String id) {
-    assert(id == '');
+    if (id == '') throw ArgumentError('Must not be empty', 'id');
     _id = id;
   }
 
