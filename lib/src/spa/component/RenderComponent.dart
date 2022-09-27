@@ -110,13 +110,13 @@ abstract class RenderComponent extends Component with MEventHandler {
   @nonVirtual
   @protected
   void _attachAllStringComponents() {
-    _stringComponents.forEach((c) {
+    for (var c in _stringComponents) {
       var element = elem.querySelector('#${c.id}');
       if (element == null) throw ComponentNotRenderedException(c.id);
       c._baseInnerElement = element;
-    });
-    _stringComponents.reversed.forEach((c) {
+    }
+    for (var c in _stringComponents.reversed) {
       c.onComponentAttached();
-    });
+    }
   }
 }

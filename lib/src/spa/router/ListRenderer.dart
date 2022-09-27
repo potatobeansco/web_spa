@@ -5,6 +5,10 @@ abstract class ListRenderer<T, C extends RenderComponent> extends BaseRouter wit
   final List<C> _modelToComponent = [];
   RenderComponent? _emptyComponent;
 
+  /// Retrieve the currently configured emptyComponent.
+  /// The component can be modified as you see fit.
+  RenderComponent? get emptyComponent => _emptyComponent;
+
   ListRenderer(String routerElementBind) : super(routerElementBind) {
     _emptyComponent = getEmptyComponent();
   }
@@ -21,8 +25,6 @@ abstract class ListRenderer<T, C extends RenderComponent> extends BaseRouter wit
   /// no component is rendered.
   ///
   /// Unlike [getItemComponent], empty component is fetched once and then stored.
-  /// Therefore, you cannot modify empty component again later after you have
-  /// created the ListRenderer.
   RenderComponent? getEmptyComponent() {
     return null;
   }
