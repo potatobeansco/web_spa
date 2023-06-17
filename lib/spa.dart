@@ -40,11 +40,9 @@ part 'src/spa/http/HttpUtilConnectionException.dart';
 part 'src/spa/http/HttpUtilUnexpectedException.dart';
 part 'src/spa/http/MJson.dart';
 
+part 'src/spa/router/ComponentRouter.dart';
 part 'src/spa/router/Route.dart';
 part 'src/spa/router/BaseRenderer.dart';
-part 'src/spa/router/BaseUrlRouter.dart';
 part 'src/spa/router/ListRenderer.dart';
-part 'src/spa/router/RootUrlComponentRouter.dart';
-part 'src/spa/router/UrlComponentRouter.dart';
 
 typedef OnClickFunc = void Function(MouseEvent event);
