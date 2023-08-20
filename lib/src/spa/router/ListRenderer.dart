@@ -17,7 +17,7 @@ abstract class ListRenderer<T, C extends RenderComponent> extends BaseRouter wit
   /// Although you can make modification to the component itself directly still.
   List<C> get components => List.unmodifiable(_modelToComponent);
 
-  FutureOr<C> getItemComponent(int index, T state);
+  FutureOr<C> getItemComponent(T state);
 
   /// Empty component is a component that is returned when there is no entry
   /// in the model. It is used for example to render empty notification on
@@ -31,7 +31,7 @@ abstract class ListRenderer<T, C extends RenderComponent> extends BaseRouter wit
 
   Future<void> refresh(int index) async {
     await _modelToComponent[index].unrender();
-    _modelToComponent[index] = await getItemComponent(index, _model[index]);
+    _modelToComponent[index] = await getItemComponent(_model[index]);
     if (index <= 0) {
       await _modelToComponent[index].renderPrepend(routerElementBind);
     } else {
@@ -47,7 +47,7 @@ abstract class ListRenderer<T, C extends RenderComponent> extends BaseRouter wit
   Future<void> addRefresh(T value) async {
     if (_emptyComponent != null && _emptyComponent!.isRendered()) await _emptyComponent?.unrender();
     add(value);
-    _modelToComponent.add(await getItemComponent(length-1, _model.last)) ;
+    _modelToComponent.add(await getItemComponent(_model.last)) ;
     await _modelToComponent.last.renderAppend(routerElementBind);
   }
 
@@ -103,6 +103,34 @@ abstract class ListRenderer<T, C extends RenderComponent> extends BaseRouter wit
     }
   }
 
+  Future<void> insertRefresh(int index, T value) async {
+    if (_emptyComponent != null && _emptyComponent!.isRendered()) await _emptyComponent?.unrender();
+    insert(index, value);
+    var c = await getItemComponent(value);
+    _modelToComponent.insert(index, c);
+    if (index > 0) {
+      await c.renderAfter(_modelToComponent[index-1].id);
+    } else {
+      await c.renderPrepend(routerElementBind);
+    }
+  }
+
+  Future<void> insertAllRefresh(int index, Iterable<T> iterable) async {
+    if (_emptyComponent != null && _emptyComponent!.isRendered()) await _emptyComponent?.unrender();
+    insertAll(index, iterable);
+    var i = 0;
+    for (final v in iterable) {
+      final c = await getItemComponent(v);
+      if (index + i == 0) {
+        await c.renderPrepend(routerElementBind);
+      } else {
+        await c.renderAfter(_modelToComponent[index+i-1].id);
+      }
+      _modelToComponent.insert(index+i, c);
+      i++;
+    }
+  }
+
   void forEachComponent(void Function(C component) action) async {
     var length = this.length;
     for (var i = 0; i < length; i++) {
@@ -140,12 +168,22 @@ abstract class ListRenderer<T, C extends RenderComponent> extends BaseRouter wit
   }
   
   @override
-  void add(T value) {
-    _model.add(value);
+  void add(T element) {
+    _model.add(element);
   }
   
   @override
   void addAll(Iterable<T> iterable) {
     _model.addAll(iterable);
+  }
+
+  @override
+  void insert(int index, T element) {
+    _model.insert(index, element);
+  }
+
+  @override
+  void insertAll(int index, Iterable<T> iterable) {
+    _model.insertAll(index, iterable);
   }
 }
