@@ -1,15 +1,19 @@
 part of '../../../spa.dart';
 
-abstract class ListRenderer<T, C extends RenderComponent> extends BaseRouter with ListMixin<T>, MLogging {
+abstract class ListRenderer<T, C extends RenderComponent> with ListMixin<T>, MLogging {
   final List<T> _model = [];
   final List<C> _modelToComponent = [];
+
+  @protected
+  final Element parentElement;
+
   RenderComponent? _emptyComponent;
 
   /// Retrieve the currently configured emptyComponent.
   /// The component can be modified as you see fit.
   RenderComponent? get emptyComponent => _emptyComponent;
 
-  ListRenderer(String routerElementBind) : super(routerElementBind) {
+  ListRenderer(this.parentElement) {
     _emptyComponent = getEmptyComponent();
   }
 
@@ -33,9 +37,9 @@ abstract class ListRenderer<T, C extends RenderComponent> extends BaseRouter wit
     await _modelToComponent[index].unrender();
     _modelToComponent[index] = await getItemComponent(_model[index]);
     if (index <= 0) {
-      await _modelToComponent[index].renderPrepend(routerElementBind);
+      await _modelToComponent[index].renderPrepend(parentElement);
     } else {
-      await _modelToComponent[index].renderAfter(_modelToComponent[index-1].id);
+      await _modelToComponent[index].renderAfter(_modelToComponent[index-1].elem);
     }
   }
 
@@ -48,7 +52,7 @@ abstract class ListRenderer<T, C extends RenderComponent> extends BaseRouter wit
     if (_emptyComponent != null && _emptyComponent!.isRendered()) await _emptyComponent?.unrender();
     add(value);
     _modelToComponent.add(await getItemComponent(_model.last)) ;
-    await _modelToComponent.last.renderAppend(routerElementBind);
+    await _modelToComponent.last.renderAppend(parentElement);
   }
 
   Future<void> removeAtRefresh(int index) async {
@@ -57,7 +61,7 @@ abstract class ListRenderer<T, C extends RenderComponent> extends BaseRouter wit
     removeAt(index);
     if (length <= 0) {
       try {
-        await _emptyComponent?.renderTo(routerElementBind);
+        await _emptyComponent?.renderTo(parentElement);
       } catch (e) {
         logWarn(e.toString());
       }
@@ -90,7 +94,7 @@ abstract class ListRenderer<T, C extends RenderComponent> extends BaseRouter wit
 
     if (renderEmptyComponent) {
       try {
-        await _emptyComponent?.renderTo(routerElementBind);
+        await _emptyComponent?.renderTo(parentElement);
       } catch (e) {
         logWarn(e.toString());
       }
@@ -109,9 +113,9 @@ abstract class ListRenderer<T, C extends RenderComponent> extends BaseRouter wit
     var c = await getItemComponent(value);
     _modelToComponent.insert(index, c);
     if (index > 0) {
-      await c.renderAfter(_modelToComponent[index-1].id);
+      await c.renderAfter(_modelToComponent[index-1].elem);
     } else {
-      await c.renderPrepend(routerElementBind);
+      await c.renderPrepend(parentElement);
     }
   }
 
@@ -122,9 +126,9 @@ abstract class ListRenderer<T, C extends RenderComponent> extends BaseRouter wit
     for (final v in iterable) {
       final c = await getItemComponent(v);
       if (index + i == 0) {
-        await c.renderPrepend(routerElementBind);
+        await c.renderPrepend(parentElement);
       } else {
-        await c.renderAfter(_modelToComponent[index+i-1].id);
+        await c.renderAfter(_modelToComponent[index+i-1].elem);
       }
       _modelToComponent.insert(index+i, c);
       i++;

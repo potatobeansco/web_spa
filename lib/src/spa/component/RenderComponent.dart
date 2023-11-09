@@ -36,27 +36,26 @@ abstract class RenderComponent extends Component with MEventHandler {
   /// super.renderTo to really render the component to the DOM.
   /// Will throw [ComponentNoParentException] if [parentId] cannot be found in the DOM.
   @nonVirtual
-  Future<void> renderTo(String parentId) async {
-    var parent = querySelector('#$parentId');
-    if (parent == null) throw ComponentNoParentException(id);
+  Future<void> renderTo(Element parentNode) async {
+    var parent = parentNode;
     await preRender();
     parent.children.clear();
     parent.children.add(baseInnerElement!);
-    this.parentId = parentId;
+    // this.parentId = parentId;
     await postRender();
   }
 
   /// Renders this component after an element with ID [elementId].
   /// This also checks whether the parent has a valid ID.
   @nonVirtual
-  Future<void> renderAfter(String elementId) async {
-    var element = querySelector('#$elementId');
-    if (element == null) {
-      throw ComponentReferenceNotExistException(elementId);
-    }
+  Future<void> renderAfter(Element element) async {
+    // var element = querySelector('#$elementId');
+    // if (element == null) {
+    //   throw ComponentReferenceNotExistException(elementId);
+    // }
 
     try {
-      parentId = element.parent!.id;
+      // parentId = element.parent!.id;
       await preRender();
       element.insertAdjacentElement('afterEnd', baseInnerElement!);
       await postRender();
@@ -68,24 +67,24 @@ abstract class RenderComponent extends Component with MEventHandler {
   /// Renders this component inside the element with ID [parentId], appended.
   /// This also checks whether the parent exists.
   @nonVirtual
-  Future<void> renderAppend(String parentId) async {
-    var parent = querySelector('#$parentId');
-    if (parent == null) throw ComponentNoParentException(id);
+  Future<void> renderAppend(Element parentElement) async {
+    // var parent = querySelector('#$parentId');
+    // if (parent == null) throw ComponentNoParentException(id);
     await preRender();
-    parent.insertAdjacentElement('beforeEnd', baseInnerElement!);
-    this.parentId = parentId;
+    parentElement.insertAdjacentElement('beforeEnd', baseInnerElement!);
+    // this.parentId = parentId;
     await postRender();
   }
 
   /// Renders this component inside the element with ID [parentId], prepended.
   /// This also checks whether the parent exists.
   @nonVirtual
-  Future<void> renderPrepend(String parentId) async {
-    var parent = querySelector('#$parentId');
-    if (parent == null) throw ComponentNoParentException(id);
+  Future<void> renderPrepend(Element parentElement) async {
+    // var parent = querySelector('#$parentId');
+    // if (parent == null) throw ComponentNoParentException(id);
     await preRender();
-    parent.insertAdjacentElement('afterBegin', baseInnerElement!);
-    this.parentId = parentId;
+    parentElement.insertAdjacentElement('afterBegin', baseInnerElement!);
+    // this.parentId = parentId;
     await postRender();
   }
 
@@ -93,13 +92,14 @@ abstract class RenderComponent extends Component with MEventHandler {
   /// Will throw [ComponentNotRenderedException] if it has not been rendered.
   @nonVirtual
   Future<void> unrender() async {
-    if (parentId == null) {
-      throw ComponentNotRenderedException(id);
-    }
+    // if (parentId == null) {
+    //   throw ComponentNotRenderedException(id);
+    // }
 
     await preUnrender();
-    querySelector('#$id')?.remove();
-    parentId = null;
+    elem.remove();
+    // querySelector('#$id')?.remove();
+    // parentId = null;
     await postUnrender();
   }
 

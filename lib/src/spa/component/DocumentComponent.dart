@@ -11,7 +11,7 @@ abstract class DocumentComponent extends RenderComponent {
     await preRender();
     body.children.clear();
     body.children.add(baseInnerElement!);
-    parentId = 'body';
+    // parentId = 'body';
     await postRender();
   }
 }

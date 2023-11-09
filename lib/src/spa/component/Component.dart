@@ -22,7 +22,7 @@ abstract class Component {
   /// words, the component will do querySelector('$parentId').setInnerHtml to
   /// render itself into the DOM, which means it will throw an error if there
   /// is no tag exist having the ID [parentId].
-  String? _parentId;
+  // String? _parentId;
   /// The HTML ID of the component itself. This must be rendered into DOM.
   /// HTML ID is the `id=""` attribute.
   late String _id;
@@ -44,14 +44,14 @@ abstract class Component {
     _id = id;
   }
 
-  @nonVirtual
-  String? get parentId => _parentId;
-
-  @nonVirtual
-  @protected
-  set parentId(String? parentId) {
-    _parentId = parentId;
-  }
+  // @nonVirtual
+  // String? get parentId => _parentId;
+  //
+  // @nonVirtual
+  // @protected
+  // set parentId(String? parentId) {
+  //   _parentId = parentId;
+  // }
 
   @nonVirtual
   String get baseInnerHtml {
@@ -140,7 +140,7 @@ abstract class Component {
   /// Check if the component is rendered at DOM or not.
   @nonVirtual
   bool isRendered() {
-    return parentId != null;
+    return querySelector('#$id') != null;
   }
 
   /// Contains checks whether a node is contained in this component.

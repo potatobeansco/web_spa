@@ -8,13 +8,13 @@ class ComponentRouter with MLogging {
 
   late String currentPath;
   Route? currentRoute;
-  final String routerElementBind;
+  final Element parentElement;
   final LinkedHashMap<String, ComponentRouterHandleFunc> matchMap = LinkedHashMap<String, ComponentRouterHandleFunc>();
   final bool doNotRenderSameRoute;
 
   StreamSubscription<PopStateEvent>? _onPopStateSubscription;
 
-  ComponentRouter(this.routerElementBind, {this.doNotRenderSameRoute = true});
+  ComponentRouter(this.parentElement, {this.doNotRenderSameRoute = true});
 
   static StreamSubscription<MouseEvent> attachOnPopStateEmitter(AnchorElement onClickElem) {
     return onClickElem.onClick.listen((event) {
@@ -91,12 +91,12 @@ class ComponentRouter with MLogging {
     var allowContinue = await route.beforeRender();
     var newComponent = await route.component;
     if (allowContinue) {
-      logDebug('[$routerElementBind] rendering ${route.id}');
+      logDebug('[${parentElement.id}] rendering ${route.id}');
       currentRoute = route;
-      await newComponent.renderTo(routerElementBind);
+      await newComponent.renderTo(parentElement);
       await route.afterRender();
     } else {
-      logDebug('[$routerElementBind] rendering ${route.id} is disallowed to continue');
+      logDebug('[${parentElement.id}] rendering ${route.id} is disallowed to continue');
     }
   }
 
@@ -105,11 +105,11 @@ class ComponentRouter with MLogging {
     var allowContinue = await currentRoute!.beforeUnrender();
     var component = await currentRoute!.component;
     if (allowContinue) {
-      logDebug('[$routerElementBind] unrendering ${currentRoute!.id}');
+      logDebug('[${parentElement.id}] unrendering ${currentRoute!.id}');
       await component.unrender();
       await currentRoute!.afterUnrender();
     } else {
-      logDebug('[$routerElementBind] unrendering ${currentRoute!.id} is disallowed to continue');
+      logDebug('[${parentElement.id}] unrendering ${currentRoute!.id} is disallowed to continue');
     }
   }
 
