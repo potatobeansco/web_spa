@@ -166,6 +166,6 @@ class ComponentRouterNoMatchException implements Exception {
 
   @override
   String toString() {
-    return '${routerElementBind ?? ''}$currentPath does not match any registered patterns';
+    return '${routerElementBind != null ? '[$routerElementBind] ' : ''}$currentPath does not match any registered patterns';
   }
 }
