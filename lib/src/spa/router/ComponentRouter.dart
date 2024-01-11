@@ -146,7 +146,7 @@ class ComponentRouter with MLogging {
     }
 
     if (!isMatch) {
-      throw ComponentRouterNoMatchException(currentUrl.path);
+      throw ComponentRouterNoMatchException(currentUrl.path, parentElement.id);
     }
   }
 
@@ -159,11 +159,13 @@ class ComponentRouter with MLogging {
 
 class ComponentRouterNoMatchException implements Exception {
   final String currentPath;
+  /// The ID in which the router is bound to (render to).
+  final String? routerElementBind;
 
-  const ComponentRouterNoMatchException(this.currentPath);
+  const ComponentRouterNoMatchException(this.currentPath, [this.routerElementBind]);
 
   @override
   String toString() {
-    return '$currentPath does not match any registered patterns';
+    return '${routerElementBind ?? ''}$currentPath does not match any registered patterns';
   }
 }
