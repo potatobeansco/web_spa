@@ -29,6 +29,7 @@ class ComponentRouter with MLogging {
   }
 
   void _loadOnPopStateListener() {
+    _onPopStateSubscription?.cancel();
     _onPopStateSubscription = window.onPopState.listen((PopStateEvent event) async {
       try {
         var newUrl = Uri.parse(window.location.href);
@@ -114,8 +115,8 @@ class ComponentRouter with MLogging {
   }
 
   Future<void> init() async {
-    await render();
     _loadOnPopStateListener();
+    await render();
   }
 
   /// Starts rendering current route.
@@ -151,9 +152,9 @@ class ComponentRouter with MLogging {
   }
 
   Future<void> dispose() async {
+    _onPopStateSubscription?.cancel();
     if (currentRoute != null) await _unrenderCurrent();
     currentRoute = null;
-    _onPopStateSubscription?.cancel();
   }
 }
 
