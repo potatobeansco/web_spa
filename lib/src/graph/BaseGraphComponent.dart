@@ -108,10 +108,10 @@ abstract class BaseGraphComponent extends StringComponent  {
       }) : super.empty(parent, id) {
 
     baseInnerHtml = '''
-    <div id="$id" class="$id" style="position: relative;overflow-x: auto;">
+    <div id="$id" style="position: relative;overflow-x: auto;">
         <canvas id="$id-canvas" style="width: 100%;"></canvas>
         <svg xmlns="http://www.w3.org/2000/svg" id="$id-caption" class="$id-caption" width="300" preserveAspectRatio="xMinYMin meet"
-            style="position: absolute;top: 0;left: 0;">
+            style="width: 100%; position: absolute;top: 0;left: 0;">
          <defs>
           <filter id="$id-dropshadow" color-interpolation-filters="sRGB" x="-40%" y="-40%" width="180%" height="180%">
             <feGaussianBlur in="SourceAlpha" stdDeviation="4"/> <!-- stdDeviation is how much to blur -->
@@ -165,15 +165,16 @@ abstract class BaseGraphComponent extends StringComponent  {
 
   void redraw() {
     _canvasElem.style.minWidth = '${getCalculatedMinWidth()}px';
-    ctx.canvas.width = _canvasElem.clientWidth;
+    _canvasElem.style.aspectRatio = aspectRatio.toStringAsPrecision(5);
+    ctx.canvas.width = _canvasElem.parent!.clientWidth;
     ctx.canvas.height = (elem.clientWidth/aspectRatio).truncate();
     _textHeight = getApproxTextHeight();
     calculateMinMaxGrid();
     drawGrid(drawGridY);
     drawDataPoints();
     drawLabels();
-    _svgElem.setAttribute('width', ctx.canvas.width.toString());
-    _svgElem.setAttribute('height', ctx.canvas.height.toString());
+    _svgElem.setAttribute('viewBox', '0 0 ${ctx.canvas.width} ${ctx.canvas.height}');
+    _svgElem.style.aspectRatio = aspectRatio.toStringAsPrecision(5);
   }
 
   void clearDrawing() {
