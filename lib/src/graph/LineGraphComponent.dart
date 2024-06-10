@@ -188,7 +188,7 @@ class LineGraphComponent extends BaseGraphComponent {
   /// Searches for the minimum and maximum X and Y points throughout the entire
   /// point sets.
   void _setMinMaxXY() {
-    if (_dataPoints.isNotEmpty && _dataPoints.values.any((element) => element.isNotEmpty)) {
+    if (_dataPoints.isNotEmpty && _dataPoints.values.every((element) => element.isNotEmpty)) {
       var xMin = double.infinity;
       var xMax = double.negativeInfinity;
       for (var dataPoint in _dataPoints.values) {
@@ -411,6 +411,7 @@ class LineGraphComponent extends BaseGraphComponent {
       });
       dotPoints.removeWhere((key, value) => outsideRangeY.containsKey(key));
 
+      ctx.globalCompositeOperation = 'lighter';
       if (linePoints.isNotEmpty) {
         // Draw shading.
         ctx.beginPath();
@@ -424,7 +425,7 @@ class LineGraphComponent extends BaseGraphComponent {
       }
     });
 
-    // ctx.globalCompositeOperation = 'source-over';
+    ctx.globalCompositeOperation = 'source-over';
 
     allMapPoints.forEach((key, value) {
       var linePoints = allLinePoints[key]!;
@@ -453,7 +454,7 @@ class LineGraphComponent extends BaseGraphComponent {
       if (dotPoints.isNotEmpty) {
         // Draw dot points.
         ctx.fillStyle = dotFillStyle[key] ?? dotFillStyle[keyAllGraph];
-        ctx.shadowColor = 'rgba(0, 0, 0, 0.3)';
+        ctx.shadowColor = 'rgba(0, 0, 0, 0.2)';
         ctx.shadowBlur = 4;
         ctx.shadowOffsetX = 1;
         ctx.shadowOffsetY = 1;
