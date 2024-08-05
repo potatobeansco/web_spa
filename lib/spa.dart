@@ -8,6 +8,7 @@ import 'dart:math';
 
 import 'package:spa/logutil.dart';
 import 'package:meta/meta.dart';
+import 'package:collection/collection.dart';
 import 'package:path/path.dart' as path;
 
 part 'src/spa/animation/AnimationElement.dart';

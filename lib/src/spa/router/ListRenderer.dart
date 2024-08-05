@@ -1,7 +1,6 @@
 part of '../../../spa.dart';
 
-abstract class ListRenderer<T, C extends RenderComponent> with ListMixin<T>, MLogging {
-  final List<T> _model = [];
+abstract class ListRenderer<T, C extends RenderComponent> extends DelegatingList<T> {
   final List<C> _modelToComponent = [];
 
   @protected
@@ -13,7 +12,7 @@ abstract class ListRenderer<T, C extends RenderComponent> with ListMixin<T>, MLo
   /// The component can be modified as you see fit.
   RenderComponent? get emptyComponent => _emptyComponent;
 
-  ListRenderer(this.parentElement) {
+  ListRenderer(this.parentElement) : super([]) {
     _emptyComponent = getEmptyComponent();
   }
 
@@ -35,7 +34,7 @@ abstract class ListRenderer<T, C extends RenderComponent> with ListMixin<T>, MLo
 
   Future<void> refresh(int index) async {
     await _modelToComponent[index].unrender();
-    _modelToComponent[index] = await getItemComponent(_model[index]);
+    _modelToComponent[index] = await getItemComponent(this[index]);
     if (index <= 0) {
       await _modelToComponent[index].renderPrepend(parentElement);
     } else {
@@ -51,7 +50,7 @@ abstract class ListRenderer<T, C extends RenderComponent> with ListMixin<T>, MLo
   Future<void> addRefresh(T value) async {
     if (_emptyComponent != null && _emptyComponent!.isRendered()) await _emptyComponent?.unrender();
     add(value);
-    _modelToComponent.add(await getItemComponent(_model.last)) ;
+    _modelToComponent.add(await getItemComponent(last)) ;
     await _modelToComponent.last.renderAppend(parentElement);
   }
 
@@ -60,11 +59,7 @@ abstract class ListRenderer<T, C extends RenderComponent> with ListMixin<T>, MLo
     _modelToComponent.removeAt(index);
     removeAt(index);
     if (length <= 0) {
-      try {
-        await _emptyComponent?.renderTo(parentElement);
-      } catch (e) {
-        logWarn(e.toString());
-      }
+      await _emptyComponent?.renderTo(parentElement);
     }
   }
 
@@ -89,15 +84,11 @@ abstract class ListRenderer<T, C extends RenderComponent> with ListMixin<T>, MLo
     for (var c in _modelToComponent) {
       await c.unrender();
     }
-    _model.clear();
+    clear();
     _modelToComponent.clear();
 
     if (renderEmptyComponent) {
-      try {
-        await _emptyComponent?.renderTo(parentElement);
-      } catch (e) {
-        logWarn(e.toString());
-      }
+      await _emptyComponent?.renderTo(parentElement);
     }
   }
 
@@ -153,41 +144,5 @@ abstract class ListRenderer<T, C extends RenderComponent> with ListMixin<T>, MLo
         throw ConcurrentModificationError(this);
       }
     }
-  }
-
-  @override
-  set length(int length) {
-    _model.length = length;
-  }
-
-  @override
-  int get length => _model.length;
-
-  @override
-  T operator [](int index) => _model[index];
-
-  @override
-  void operator []=(int index, T value) {
-    _model[index] = value;
-  }
-  
-  @override
-  void add(T element) {
-    _model.add(element);
-  }
-  
-  @override
-  void addAll(Iterable<T> iterable) {
-    _model.addAll(iterable);
-  }
-
-  @override
-  void insert(int index, T element) {
-    _model.insert(index, element);
-  }
-
-  @override
-  void insertAll(int index, Iterable<T> iterable) {
-    _model.insertAll(index, iterable);
   }
 }
