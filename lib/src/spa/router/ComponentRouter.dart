@@ -2,6 +2,13 @@ part of '../../../spa.dart';
 
 typedef ComponentRouterHandleFunc = Route Function(Map<String, String> urlParams, Map<String, String> queryParams);
 
+class _ComponentRoute {
+  final ComponentRouterHandleFunc handleFunc;
+  final bool? prefixMatch;
+
+  const _ComponentRoute(this.handleFunc, {this.prefixMatch});
+}
+
 class ComponentRouter with MLogging {
   @override
   String get className => 'ComponentRouter';
@@ -9,7 +16,7 @@ class ComponentRouter with MLogging {
   late String currentPath;
   Route? currentRoute;
   final Element parentElement;
-  final LinkedHashMap<String, ComponentRouterHandleFunc> matchMap = LinkedHashMap<String, ComponentRouterHandleFunc>();
+  final LinkedHashMap<String, _ComponentRoute> matchMap = LinkedHashMap<String, _ComponentRoute>();
   final bool doNotRenderSameRoute;
 
   StreamSubscription<PopStateEvent>? _onPopStateSubscription;
@@ -42,13 +49,55 @@ class ComponentRouter with MLogging {
     });
   }
 
-  void handleRoute(String pattern, ComponentRouterHandleFunc matcherFunc) {
-    matchMap[pattern] = matcherFunc;
+  void handleRoute(String pattern, ComponentRouterHandleFunc matcherFunc, {bool? prefixMatch}) {
+    matchMap[pattern] = _ComponentRoute(matcherFunc, prefixMatch: prefixMatch);
   }
 
-  Map<String, String>? _extractParams(String pattern, String currentPath) {
+  @Deprecated('Automatic extraction will be replaced with explicit match prefix/not')
+  Map<String, String>? _extractParamsAuto(String pattern, String currentPath) {
     var cp = path.normalize(currentPath);
     var matchSubpaths = pattern.endsWith('/');
+    var patternUri = Uri(path: path.normalize(pattern));
+    var currentUri = Uri(path: cp);
+
+    // Current path is shorter.
+    if (currentUri.pathSegments.length < patternUri.pathSegments.length) return null;
+
+    // Current path is longer, but match subpaths is false.
+    if (!matchSubpaths && patternUri.pathSegments.length != currentUri.pathSegments.length) return null;
+
+    final minLength = patternUri.pathSegments.length;
+    final patternSegments = patternUri.pathSegments;
+    final currentPathSegments = currentUri.pathSegments;
+    var params = <String, String>{};
+    var isMatch = true;
+    for (var i = 0; i < minLength; i++) {
+      final patternSegment = patternSegments[i];
+      final currentSegment = currentPathSegments[i];
+
+      // we extract the param
+      if (patternSegment.startsWith('[') && patternSegment.endsWith(']')) {
+        var key = patternSegment.replaceFirst('[', '');
+        key = key.substring(0, key.length-1);
+        params[key] = currentSegment;
+        continue;
+      }
+
+      // Exact segment match
+      if (currentSegment != patternSegment) {
+        isMatch = false;
+        break;
+      }
+    }
+
+    if (!isMatch) return null;
+
+    return params;
+  }
+
+  Map<String, String>? _extractParams(String pattern, String currentPath, {bool prefixMatch = false}) {
+    var cp = path.normalize(currentPath);
+    var matchSubpaths = prefixMatch;
     var patternUri = Uri(path: path.normalize(pattern));
     var currentUri = Uri(path: cp);
 
@@ -103,14 +152,16 @@ class ComponentRouter with MLogging {
 
   /// Unrenders the current route, assuming it is not null.
   Future<void> _unrenderCurrent() async {
-    var allowContinue = await currentRoute!.beforeUnrender();
-    var component = await currentRoute!.component;
+    var r = currentRoute;
+    currentRoute = null;
+    var allowContinue = await r!.beforeUnrender();
+    var component = await r.component;
     if (allowContinue) {
-      logDebug('[${parentElement.id}] unrendering ${currentRoute!.id}');
+      logDebug('[${parentElement.id}] unrendering ${r.id}');
       await component.unrender();
-      await currentRoute!.afterUnrender();
+      await r.afterUnrender();
     } else {
-      logDebug('[${parentElement.id}] unrendering ${currentRoute!.id} is disallowed to continue');
+      logDebug('[${parentElement.id}] unrendering ${r.id} is disallowed to continue');
     }
   }
 
@@ -126,18 +177,23 @@ class ComponentRouter with MLogging {
     var isMatch = false;
     for (var i in matchMap.entries) {
       var pattern = i.key;
-      var matchFunc = i.value;
-      var params = _extractParams(pattern, currentUrl.path);
+      var entry = i.value;
+      Map<String, String>? params;
+      if (entry.prefixMatch == null) {
+        params = _extractParamsAuto(pattern, currentUrl.path);
+      } else {
+        params = _extractParams(pattern, currentPath, prefixMatch: entry.prefixMatch!);
+      }
+
       if (params == null) continue; // Does not match pattern, continue to the next
 
       isMatch = true;
-      var route = matchFunc(params, currentUrl.queryParameters);
+      var route = entry.handleFunc(params, currentUrl.queryParameters);
       if (currentRoute != null) {
         if (doNotRenderSameRoute && currentRoute!.id == route.id) {
           break;
         } else {
           await _unrenderCurrent();
-          currentRoute = null;
         }
       }
 
@@ -154,7 +210,6 @@ class ComponentRouter with MLogging {
   Future<void> dispose() async {
     _onPopStateSubscription?.cancel();
     if (currentRoute != null) await _unrenderCurrent();
-    currentRoute = null;
   }
 }
 
