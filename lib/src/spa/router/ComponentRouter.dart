@@ -173,6 +173,7 @@ class ComponentRouter with MLogging {
   /// Starts rendering current route.
   Future<void> render() async {
     var currentUrl = Uri.parse(window.location.href);
+    // TODO: currentPath and currentRoute should be set both at the same time
     currentPath = currentUrl.path;
     var isMatch = false;
     for (var i in matchMap.entries) {
@@ -197,8 +198,8 @@ class ComponentRouter with MLogging {
         }
       }
 
-      await _renderRoute(route);
       currentRoute = route;
+      await _renderRoute(route);
       break;
     }
 
