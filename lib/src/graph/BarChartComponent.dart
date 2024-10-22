@@ -1,6 +1,6 @@
 part of '../../graph.dart';
 
-class BarChartComponent extends BaseGraphComponent {
+class BarChartComponent extends CanvasBaseGraphComponent {
   static const keyAllGraph = BaseGraphComponent.keyAllGraph;
 
   /// Width of a single bar.

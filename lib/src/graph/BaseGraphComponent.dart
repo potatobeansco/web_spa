@@ -1,16 +1,84 @@
 part of '../../graph.dart';
 
 abstract class BaseGraphComponent extends StringComponent  {
-  /// The default SVG viewbox width.
-  /// The SVG height will be calculated by width/[aspectRatio].
-  static const svgViewBoxWidth = 300;
-
   static const keyAllGraph = '';
 
   /// The calculated height of label fonts.
   /// It is calculated by measuring the baseline to the top part of the text
   /// bounding box. See also [TextMetrics.fontBoundingBoxAscent].
   double _textHeight = 10;
+
+  /// The distance between label text to the grid.
+  final double textMargin;
+
+  /// The width/height ratio of this canvas. The canvas height, everytime it
+  /// is redrawn, changes based on the canvas clientWidth. The height follows
+  /// the width depending on the ratio: height = width/aspectRatio.
+  final double aspectRatio;
+
+  /// The line width used to draw canvas grid.
+  final double gridLineWidth;
+  /// The line stroke style for the canvas grid.
+  final String gridLineStrokeStyle;
+  /// The label texts color style.
+  final String labelFillStyle;
+  /// The labels font style.
+  final String labelFontStyle;
+  /// The caption background color.
+  final String captionBgColor;
+  /// The caption foreground color (the text color).
+  final String captionFgColor;
+  /// The caption font family.
+  final String captionFontFamily;
+  /// Whether to draw Y grid lines.
+  final bool drawGridY;
+
+  BaseGraphComponent(RenderComponent parent, String id,
+      {
+        this.textMargin = 15,
+        this.aspectRatio = 1.5,
+        this.gridLineWidth = 1,
+        this.gridLineStrokeStyle = '#d7d7d7',
+        this.labelFillStyle = '#aaaaaa',
+        this.labelFontStyle = '14px sans-serif',
+        this.captionBgColor = '#2d2d2d',
+        this.captionFgColor = 'white',
+        this.captionFontFamily = 'sans-serif',
+        this.drawGridY = false,
+      }) : super.empty(parent, id);
+
+  @protected
+  void drawGrid([bool drawY = false]);
+
+  @protected
+  void drawLabels();
+
+  @protected
+  void drawDataPoints();
+
+  void clearPoints();
+
+  /// Linear interpolate x between two points (x1, y1) and (x2, y2).
+  @protected
+  double lerp(num x, num x1, num x2, num y1, num y2) {
+    var m = (y2 - y1)/(x2 - x1);
+    var y = y1 + (x - x1) * m;
+    return y.toDouble();
+  }
+}
+
+class DataPoint {
+  double x;
+  double y;
+
+  DataPoint(this.x, this.y);
+}
+
+abstract class CanvasBaseGraphComponent extends BaseGraphComponent {
+  /// The default SVG viewbox width.
+  /// The SVG height will be calculated by width/[aspectRatio].
+  static const svgViewBoxWidth = 300;
+
   /// The minimum coordinate of the grid, in pixel.
   /// The grid starts at ([gridMinPxX],[gridMinPxY]) and ends in
   /// ([gridMaxPxX], [gridMaxPxY]).
@@ -36,8 +104,7 @@ abstract class BaseGraphComponent extends StringComponent  {
   final double maxLabelWidthX;
   /// The maximum width for label texts in Y axis.
   final double maxLabelWidthY;
-  /// The distance between label text to the grid.
-  final double textMargin;
+
   /// The formatting function used to display the labels in X axis.
   /// If none is specified, it by default uses [NumberFormat.compact] to format
   /// label values into string. You might want to override this for example
@@ -57,28 +124,6 @@ abstract class BaseGraphComponent extends StringComponent  {
   /// seconds into human-readable date, you should supply this function.
   final String Function(double label) labelFormatY;
 
-  /// The width/height ratio of this canvas. The canvas height, everytime it
-  /// is redrawn, changes based on the canvas clientWidth. The height follows
-  /// the width depending on the ratio: height = width/aspectRatio.
-  final double aspectRatio;
-
-  /// The line width used to draw canvas grid.
-  final double gridLineWidth;
-  /// The line stroke style for the canvas grid.
-  final String gridLineStrokeStyle;
-  /// The label texts color style.
-  final String labelFillStyle;
-  /// The labels font style.
-  final String labelFontStyle;
-  /// The caption background color.
-  final String captionBgColor;
-  /// The caption foreground color (the text color).
-  final String captionFgColor;
-  /// The caption font family.
-  final String captionFontFamily;
-  /// Whether to draw Y grid lines.
-  final bool drawGridY;
-
   CanvasRenderingContext2D get ctx {
     return _canvasElem.context2D;
   }
@@ -89,24 +134,22 @@ abstract class BaseGraphComponent extends StringComponent  {
   RectElement get _captionRectElem => queryById('$id-caption-g-rect') as RectElement;
   TextElement get _captionTextElem => queryById('$id-caption-g-text') as TextElement;
 
-  BaseGraphComponent(RenderComponent parent, String id,
-      {
-        this.maxLabelWidthX = 50,
-        this.maxLabelWidthY = 20,
-        this.textMargin = 15,
-        this.labelFormatX = _defaultLabelFormat,
-        this.labelFormatY = _defaultLabelFormat,
-        this.aspectRatio = 1.5,
-        this.gridLineWidth = 1,
-        this.gridLineStrokeStyle = '#d7d7d7',
-        this.labelFillStyle = '#aaaaaa',
-        this.labelFontStyle = '14px sans-serif',
-        this.captionBgColor = '#2d2d2d',
-        this.captionFgColor = 'white',
-        this.captionFontFamily = 'sans-serif',
-        this.drawGridY = false,
-      }) : super.empty(parent, id) {
-
+  CanvasBaseGraphComponent(super.parent, super.id, {
+    this.maxLabelWidthX = 50,
+    this.maxLabelWidthY = 20,
+    this.labelFormatX = _defaultLabelFormat,
+    this.labelFormatY = _defaultLabelFormat,
+    super.textMargin = 15,
+    super.aspectRatio = 1.5,
+    super.gridLineWidth = 1,
+    super.gridLineStrokeStyle = '#d7d7d7',
+    super.labelFillStyle = '#aaaaaa',
+    super.labelFontStyle = '14px sans-serif',
+    super.captionBgColor = '#2d2d2d',
+    super.captionFgColor = 'white',
+    super.captionFontFamily = 'sans-serif',
+    super.drawGridY = false,
+  }) {
     baseInnerHtml = '''
     <div id="$id" style="position: relative;overflow-x: auto;">
         <canvas id="$id-canvas"></canvas>
@@ -151,17 +194,6 @@ abstract class BaseGraphComponent extends StringComponent  {
     return ctx.measureText('M').width!.toDouble();
   }
 
-  /// Gets the calculated minimum width of the graph.
-  double getCalculatedMinWidth();
-
-  @protected
-  void calculateMinMaxGrid() {
-    gridMaxPxX = calcGridMaxPxX();
-    gridMaxPxY = calcGridMaxPxY();
-    gridMinPxX = calcGridMinPxX();
-    gridMinPxY = calcGridMinPxY();
-  }
-
   void redraw() {
     var minWidth = getCalculatedMinWidth();
     var canvasWidth = max(minWidth, elem.clientWidth);
@@ -189,15 +221,12 @@ abstract class BaseGraphComponent extends StringComponent  {
   }
 
   @protected
-  void drawGrid([bool drawY = false]);
-
-  @protected
-  void drawLabels();
-
-  @protected
-  void drawDataPoints();
-
-  void clearPoints();
+  void calculateMinMaxGrid() {
+    gridMaxPxX = calcGridMaxPxX();
+    gridMaxPxY = calcGridMaxPxY();
+    gridMinPxX = calcGridMinPxX();
+    gridMinPxY = calcGridMinPxY();
+  }
 
   double calcGridMaxPxX();
 
@@ -213,18 +242,6 @@ abstract class BaseGraphComponent extends StringComponent  {
   /// Gets how many labels the graph should display in Y axis.
   int getLabelCountY();
 
-  /// Linear interpolate x between two points (x1, y1) and (x2, y2).
-  @protected
-  double lerp(num x, num x1, num x2, num y1, num y2) {
-    var m = (y2 - y1)/(x2 - x1);
-    var y = y1 + (x - x1) * m;
-    return y.toDouble();
-  }
-}
-
-class DataPoint {
-  double x;
-  double y;
-
-  DataPoint(this.x, this.y);
+  /// Gets the calculated minimum width of the graph.
+  double getCalculatedMinWidth();
 }

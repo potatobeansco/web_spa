@@ -11,7 +11,7 @@ class BoxDataPoint {
   const BoxDataPoint({this.x = 0, this.median = 0, this.q1 = 0, this.q3 = 0, this.min = 0, this.max = 0});
 }
 
-class BoxChartComponent extends BaseGraphComponent {
+class BoxChartComponent extends CanvasBaseGraphComponent {
   static const keyAllGraph = BaseGraphComponent.keyAllGraph;
 
   /// Width of a single bar.

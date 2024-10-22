@@ -1,0 +1,23 @@
+targets:
+  $default:
+    sources:
+      include:
+        - lib/**
+        - web/**
+        - pubspec.*
+        - $package$
+      exclude:
+        - "**~" # Temporary files created while editing a file, causing build watch to crash most of the time
+    builders:
+      build_web_compilers:entrypoint:
+        generate_for:
+          - web/js/*.dart
+        release_options:
+          dart2js_args:
+            - -O2
+            - -v
+      sass_builder:
+        generate_for:
+          - web/css/*.scss
+        release_options:
+          outputStyle: compressed

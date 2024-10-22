@@ -8,7 +8,7 @@ part of '../../graph.dart';
 /// The line graph itself and the data points are drawn on the canvas. On top
 /// of that is an SVG element, used to display captions under data points
 /// dynamically. Currently, the way it displays captions cannot be changed.
-class LineGraphComponent extends BaseGraphComponent {
+class LineGraphComponent extends CanvasBaseGraphComponent {
   static const keyAllGraph = BaseGraphComponent.keyAllGraph;
 
   /// Dot point size. Just to remind you, dot point is each point
