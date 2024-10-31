@@ -16,3 +16,4 @@ part 'src/graph/BarChartComponent.dart';
 part 'src/graph/BoxChartComponent.dart';
 part 'src/graph/LineGraphComponent.dart';
 part 'src/graph/SpiderChartComponent.dart';
+part 'src/graph/StackedBarChartComponent.dart';

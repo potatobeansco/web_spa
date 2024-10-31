@@ -74,6 +74,13 @@ class DataPoint {
   DataPoint(this.x, this.y);
 }
 
+class TextDataPoint {
+  String x;
+  double y;
+
+  TextDataPoint(this.x, this.y);
+}
+
 abstract class CanvasBaseGraphComponent extends BaseGraphComponent {
   /// The default SVG viewbox width.
   /// The SVG height will be calculated by width/[aspectRatio].
