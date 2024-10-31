@@ -197,7 +197,7 @@ class SpiderChartComponent extends BaseGraphComponent {
       i++;
     }
 
-    _gridElem.children.addAll(textElems);
+    _labelElem.children.addAll(textElems);
   }
 
   @override
