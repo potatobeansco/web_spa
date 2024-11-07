@@ -30,6 +30,7 @@ class SpiderChartComponent extends BaseGraphComponent {
     this.maxLabelWidth = 50,
     this.pointIntervalRadiusWidth = 20,
     Set<String>? labels,
+    String? css = 'spider',
     super.gridLineWidth,
     super.aspectRatio,
     super.textMargin,
@@ -41,8 +42,8 @@ class SpiderChartComponent extends BaseGraphComponent {
     super.captionFontFamily,
   }) : labels = labels ?? {} {
     baseInnerHtml = '''
-    <div id="$id" style="aspect-ratio: $aspectRatio;position: relative;overflow-x: auto;width: 100%;">
-        <svg id="$id-svg" xmlns="http://www.w3.org/2000/svg" class="$id" width="100%" height="100%" style="display: block;">
+    <div id="$id" class="$css" style="aspect-ratio: $aspectRatio;position: relative;overflow-x: auto;width: 100%;">
+        <svg id="$id-svg" xmlns="http://www.w3.org/2000/svg" class="$css-svg" width="100%" height="100%" style="display: block;">
             <g id="$id-svg-grid"></g>
             <g id="$id-svg-label"></g>
             <g id="$id-svg-points"></g>

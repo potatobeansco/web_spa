@@ -76,6 +76,7 @@ class StackedBarChartComponent extends BaseGraphComponent {
     double? labelMinY,
     double? labelMaxY,
     String Function(double)? labelFormatY,
+    String? css = 'stackedbar',
     super.gridLineWidth,
     super.aspectRatio,
     super.textMargin,
@@ -102,8 +103,8 @@ class StackedBarChartComponent extends BaseGraphComponent {
     if (labelsX != null) this.labelsX = LinkedHashSet.from(labelsX);
 
     baseInnerHtml = '''
-    <div id="$id" style="aspect-ratio: $aspectRatio;position: relative;overflow-x: auto;width: 100%;">
-        <svg id="$id-svg" xmlns="http://www.w3.org/2000/svg" class="$id" width="100%" height="100%" style="display: block;">
+    <div id="$id" class="$css" style="aspect-ratio: $aspectRatio;position: relative;overflow-x: auto;width: 100%;">
+        <svg id="$id-svg" xmlns="http://www.w3.org/2000/svg" class="$css-svg" width="100%" height="100%" style="display: block;">
             <g id="$id-svg-grid"></g>
             <g id="$id-svg-label"></g>
             <g id="$id-svg-points"></g>
