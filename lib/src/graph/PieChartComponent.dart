@@ -109,19 +109,25 @@ class PieChartComponent extends BaseGraphComponent {
 
     double totalRadii = 0;
     for (var dpe in _dataPoints.entries) {
-      var value = dpe.value;
-      var dataRadii = 2*pi*dpe.value;
-      var pointStart = [gridR*sin(totalRadii) + r + dx, gridR*cos(totalRadii) + r + dy];
-      var pointEnd = [gridR*sin(totalRadii+dataRadii) + r + dx, gridR*cos(totalRadii + dataRadii) + r + dy];
-
-      var largeArc = value > 0.5 ? 1 : 0;
       var fill = chartFillStyle[dpe.key] ?? chartFillStyle[keyAllGraph]!;
       if (_activeGraphs.isNotEmpty && !_activeGraphs.contains(dpe.key)) {
         fill = Color.createRgba(0, 0, 0, 0.2);
       }
 
-      _pointsElem.children.add(SvgElement.svg('<path d="M$centerX,$centerY L${pointStart[0]},${pointStart[1]} A$gridR $gridR ${360*value} $largeArc 0 ${pointEnd[0]},${pointEnd[1]} Z" fill="$fill" stroke="rgba(255, 255, 255, 0.1)" stroke-width="1" />'));
-      totalRadii += dataRadii;
+      if (dpe.value >= 1) {
+        _pointsElem.children.add(SvgElement.svg('<circle cx="$centerX" cy="$centerY" r="$gridR" fill="$fill" stroke="rgba(255, 255, 255, 0.1)" stroke-width="1" />'));
+        totalRadii = 1;
+        break;
+      } else {
+        var value = dpe.value;
+        var dataRadii = 2*pi*dpe.value;
+        var pointStart = [gridR*sin(totalRadii) + r + dx, gridR*cos(totalRadii) + r + dy];
+        var pointEnd = [gridR*sin(totalRadii+dataRadii) + r + dx, gridR*cos(totalRadii + dataRadii) + r + dy];
+
+        var largeArc = value > 0.5 ? 1 : 0;
+        _pointsElem.children.add(SvgElement.svg('<path d="M$centerX,$centerY L${pointStart[0]},${pointStart[1]} A$gridR $gridR ${360*value} $largeArc 0 ${pointEnd[0]},${pointEnd[1]} Z" fill="$fill" stroke="rgba(255, 255, 255, 0.1)" stroke-width="1" />'));
+        totalRadii += dataRadii;
+      }
     }
   }
 
