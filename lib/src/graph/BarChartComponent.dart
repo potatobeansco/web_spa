@@ -64,7 +64,7 @@ class BarChartComponent extends CanvasBaseGraphComponent {
 
   final Map<String, Map<String, _BarHoverPath>> _hoverPaths = {};
 
-  BarChartComponent(RenderComponent parent, String id, {
+  BarChartComponent(super.parent, super.id, {
     Map<String, List<DataPoint>> points = const {},
     LinkedHashSet<String>? labelsX,
     Set<String>? graphKeys,
@@ -72,20 +72,20 @@ class BarChartComponent extends CanvasBaseGraphComponent {
     int? labelCountY,
     double? labelMinY,
     double? labelMaxY,
-    double maxLabelWidthX = 50,
-    double maxLabelWidthY = 20,
-    double textMargin = 15,
+    super.maxLabelWidthX,
+    super.maxLabelWidthY,
+    super.textMargin,
     String Function(double)? labelFormatX,
     String Function(double)? labelFormatY,
-    double aspectRatio = 1.5,
-    double gridLineWidth = 1,
-    String gridLineStrokeStyle = '#d7d7d7',
-    String labelFillStyle = '#aaaaaa',
-    String labelFontStyle = '14px sans-serif',
-    String captionBgColor = '#2d2d2d',
-    String captionFgColor = 'white',
-    String captionFontFamily = 'sans-serif',
-    bool drawGridY = false,
+    super.aspectRatio,
+    super.gridLineWidth,
+    super.gridLineStrokeStyle,
+    super.labelFillStyle,
+    super.labelFontStyle,
+    super.captionBgColor,
+    super.captionFgColor,
+    super.captionFontFamily,
+    super.drawGridY,
     this.barFillStyle = const {keyAllGraph: '#aaaaaa'},
     this.minWidth = 500,
     this.minWidthOverride = false,
@@ -95,21 +95,8 @@ class BarChartComponent extends CanvasBaseGraphComponent {
     this.onHover,
     this.onHoverOut,
     this.onClick,
-  }) : super(parent, id,
-      maxLabelWidthX: maxLabelWidthX,
-      maxLabelWidthY: maxLabelWidthY,
-      textMargin: textMargin,
-      labelFormatX: labelFormatX ?? _defaultLabelFormat,
+  }) : super(labelFormatX: labelFormatX ?? _defaultLabelFormat,
       labelFormatY: labelFormatY ?? _defaultLabelFormat,
-      aspectRatio: aspectRatio,
-      gridLineWidth: gridLineWidth,
-      gridLineStrokeStyle: gridLineStrokeStyle,
-      labelFillStyle: labelFillStyle,
-      labelFontStyle: labelFontStyle,
-      captionBgColor: captionBgColor,
-      captionFgColor: captionFgColor,
-      captionFontFamily: captionFontFamily,
-      drawGridY: drawGridY,
   ) {
     if (!barFillStyle.containsKey(keyAllGraph)) barFillStyle[keyAllGraph] = '#aaaaaa';
     _initialLabelCountY = labelCountY;
@@ -138,7 +125,7 @@ class BarChartComponent extends CanvasBaseGraphComponent {
       _graphKeys.add(key);
       for (var dp in value) {
         // If the labelsX has predefined X labels, ignore those points that are outside of defined labels.
-        if (labelsXSet && labelsX!.contains(this.labelFormatX(dp.x))) continue;
+        if (labelsXSet && labelsX.contains(this.labelFormatX(dp.x))) continue;
 
         if (_dataPoints[this.labelFormatX(dp.x)] == null) {
           _dataPoints[this.labelFormatX(dp.x)] = {};
@@ -273,7 +260,7 @@ class BarChartComponent extends CanvasBaseGraphComponent {
         var bar = Path2D();
         var hoverPath = _BarHoverPath(bar, barMinPxX + offset, pxY, max(gridMaxPxY - pxY, 1));
         bar.rect(hoverPath.pxX, hoverPath.pxY, singleBarWidth, hoverPath.height);
-        ctx.fillStyle = barFillStyle[graphName] ?? barFillStyle[keyAllGraph];
+        ctx.fillStyle = (barFillStyle[graphName] ?? barFillStyle[keyAllGraph])!.toJS;
         ctx.fillRect(hoverPath.pxX, hoverPath.pxY, singleBarWidth, hoverPath.height);
         if (_hoverPaths[x] == null) {
           _hoverPaths[x] = {graphName: hoverPath};
@@ -309,7 +296,7 @@ class BarChartComponent extends CanvasBaseGraphComponent {
     ctx.shadowOffsetY = 0;
     ctx.textBaseline = 'middle';
     ctx.textAlign = 'right';
-    ctx.fillStyle = labelFillStyle;
+    ctx.fillStyle = labelFillStyle.toJS;
     for (var i = 0; i < labelCountY; i++) {
       ctx.fillText(labelFormatY(maxY - intervalY*i), gridMinPxX - textMargin, gridMinPxY + spaceY*i, maxLabelWidthY);
     }
@@ -335,7 +322,7 @@ class BarChartComponent extends CanvasBaseGraphComponent {
     var rangeY = gridMaxPxY - gridMinPxY;
     var spaceY = rangeY/(labelCountY-1);
 
-    ctx.strokeStyle = gridLineStrokeStyle;
+    ctx.strokeStyle = gridLineStrokeStyle.toJS;
     ctx.lineWidth = gridLineWidth;
     for (var i = 0; i < labelCountY; i++) {
       ctx.beginPath();
@@ -384,15 +371,15 @@ class BarChartComponent extends CanvasBaseGraphComponent {
     if (_initialLabelCountY != null) return _initialLabelCountY!;
 
     var divider = 45;
-    if (ctx.canvas.height!.toDouble() < 600) {
+    if (ctx.canvas.height.toDouble() < 600) {
       divider = 45;
-    } else if (ctx.canvas.height!.toDouble() < 1200) {
+    } else if (ctx.canvas.height.toDouble() < 1200) {
       divider = 80;
     } else {
       divider = 100;
     }
 
-    return max((ctx.canvas.height!.toDouble()/divider).truncate(), 2);
+    return max((ctx.canvas.height.toDouble()/divider).truncate(), 2);
   }
 
   /// Get the minimum (the first, the bottommost) Y label value.
@@ -443,15 +430,15 @@ class BarChartComponent extends CanvasBaseGraphComponent {
   @override
   double calcGridMaxPxX() {
     if (maxLabelWidthX > getBarWidth()) {
-      return (ctx.canvas.width!.toDouble() - maxLabelWidthX/2).toDouble();
+      return (ctx.canvas.width.toDouble() - maxLabelWidthX/2).toDouble();
     }
 
-    return ctx.canvas.width!.toDouble();
+    return ctx.canvas.width.toDouble();
   }
 
   @override
   double calcGridMaxPxY() {
-    return (ctx.canvas.height!.toDouble() - textMargin - _textHeight).toDouble();
+    return (ctx.canvas.height.toDouble() - textMargin - _textHeight).toDouble();
   }
 
   @override
@@ -501,17 +488,17 @@ class BarChartComponent extends CanvasBaseGraphComponent {
     var translateValueY = viewBoxY;
     var bb = _captionElem.getBBox();
     // Width, based on viewbox coordinate system.
-    var widthViewBox = bb.width!.toDouble();
+    var widthViewBox = bb.width.toDouble();
     // Height, based on viewbox coordinate system.
-    var heightViewBox = bb.height!.toDouble();
+    var heightViewBox = bb.height.toDouble();
     var rightestPointViewBox = viewBoxX + widthViewBox;
     var bottommostPointViewBox = viewBoxY + heightViewBox;
     // Outside range X, translate -width.
-    if (rightestPointViewBox > ctx.canvas.width!.toDouble()) {
+    if (rightestPointViewBox > ctx.canvas.width.toDouble()) {
       translateValueX -= widthViewBox;
     }
     // Outside range of Y too, translate -height.
-    if (bottommostPointViewBox > ctx.canvas.height!.toDouble()) {
+    if (bottommostPointViewBox > ctx.canvas.height.toDouble()) {
       translateValueY -= heightViewBox;
     }
 
@@ -540,7 +527,8 @@ class BarChartComponent extends CanvasBaseGraphComponent {
       for (var bar in x.value.entries) {
         var graphName = bar.key;
         var path = bar.value;
-        if (ctx.isPointInPath(path.path, event.offset.x, event.offset.y)) {
+        // TODO: ensure it is right to call isPointInPath this way
+        if (ctx.isPointInPath(path.path, event.offsetX, event.offsetY.toJS)) {
           onPointHover(graphName,
             x.key,
             _dataPoints[x.key]![graphName]!,
@@ -561,7 +549,7 @@ class BarChartComponent extends CanvasBaseGraphComponent {
       for (var bar in x.value.entries) {
         var graphName = bar.key;
         var path = bar.value;
-        if (ctx.isPointInPath(path.path, event.offset.x, event.offset.y)) {
+        if (ctx.isPointInPath(path.path, event.offsetX, event.offsetY.toJS)) {
           onPointClick(x.key, _dataPoints[x.key]![graphName]!);
           return;
         }

@@ -1,4 +1,4 @@
-part of spa;
+part of '../../../spa.dart';
 
 /// The basic building block of the whole application.
 /// [Component], is a basic and abstract class, used to define a set of HTML
@@ -16,13 +16,6 @@ part of spa;
 /// to read the documentation of that attribute before creating the class.
 /// There are other methods that you need to override as well.
 abstract class Component {
-  /// The HTML ID of the parent where this component is rendered.
-  /// The ID must refer to existent tag. This ID is used as reference to
-  /// querySelector command, in order to render the component to DOM. In other
-  /// words, the component will do querySelector('$parentId').setInnerHtml to
-  /// render itself into the DOM, which means it will throw an error if there
-  /// is no tag exist having the ID [parentId].
-  // String? _parentId;
   /// The HTML ID of the component itself. This must be rendered into DOM.
   /// HTML ID is the `id=""` attribute.
   late String _id;
@@ -44,26 +37,26 @@ abstract class Component {
     _id = id;
   }
 
-  // @nonVirtual
-  // String? get parentId => _parentId;
-  //
-  // @nonVirtual
-  // @protected
-  // set parentId(String? parentId) {
-  //   _parentId = parentId;
-  // }
-
   @nonVirtual
   String get baseInnerHtml {
-    var wrapper = Element.div();
+    var wrapper = HTMLTemplateElement();
     wrapper.children.add(_baseInnerElement!);
-    return wrapper.innerHtml!;
+    return wrapper.getHTML();
   }
 
   /// Returns the DOM [Element] of this component by doing
   /// `querySelector('$id')`.
   @nonVirtual
   Element get elem => baseInnerElement!;
+
+  @nonVirtual
+  HTMLElement get htmlElem => elem as HTMLElement;
+
+  @nonVirtual
+  SVGElement get svgElem => elem as SVGElement;
+
+  @nonVirtual
+  MathMLElement get mathMlElem => elem as MathMLElement;
 
   @nonVirtual
   @protected
@@ -84,10 +77,9 @@ abstract class Component {
   /// change in the future.
   @protected
   set baseInnerHtml(String baseInnerHtml) {
-    var template = document.createElement('template');
-    // ignore: unsafe_html
-    template.setInnerHtml(baseInnerHtml.trim(), validator: TrustedNodeValidator(), treeSanitizer: null);
-    _baseInnerElement = (template as TemplateElement).content!.nodes.single as Element;
+    var template = document.createElement('template') as HTMLTemplateElement;
+    template.setHTMLUnsafe(baseInnerHtml.trim().toJS);
+    _baseInnerElement = template.content.children.item(0);
     if (_baseInnerElement!.id != id) {
       throw ComponentNoIdException(id);
     }
@@ -125,14 +117,14 @@ abstract class Component {
 
   /// Does elem.querySelectorAll(.elemClass) to select all
   /// element that have matched class.
-  ElementList<Element> queryByClass(String elemClass) {
+  NodeList queryByClass(String elemClass) {
     return elem.querySelectorAll('.$elemClass');
   }
 
   @nonVirtual
   @protected
   void assertDuplicateId(String id) {
-    if (querySelector('#$id') != null) {
+    if (document.querySelector('#$id') != null) {
       throw ComponentDuplicateIdException(id);
     }
   }
@@ -140,7 +132,7 @@ abstract class Component {
   /// Check if the component is rendered at DOM or not.
   @nonVirtual
   bool isRendered() {
-    return querySelector('#$id') != null;
+    return document.querySelector('#$id') != null;
   }
 
   /// Contains checks whether a node is contained in this component.

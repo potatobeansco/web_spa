@@ -78,7 +78,7 @@ class LineGraphComponent extends CanvasBaseGraphComponent {
   Function(double x, double y, double coordX, double coordY)? onHover;
   Function()? onHoverOut;
 
-  LineGraphComponent(RenderComponent parent, String id,
+  LineGraphComponent(super.parent, super.id,
       {Map<String, List<DataPoint>> points = const {},
         int? labelCountX,
         int? labelCountY,
@@ -86,16 +86,16 @@ class LineGraphComponent extends CanvasBaseGraphComponent {
         double? labelMinY,
         double? labelMaxX,
         double? labelMaxY,
-        double maxLabelWidthX = 50,
-        double maxLabelWidthY = 20,
-        double textMargin = 15,
-        String Function(double) labelFormatX = _defaultLabelFormat,
-        String Function(double) labelFormatY = _defaultLabelFormat,
-        double aspectRatio = 1.5,
-        double gridLineWidth = 1,
-        String gridLineStrokeStyle = '#d7d7d7',
-        String labelFillStyle = '#aaaaaa',
-        String labelFontStyle = '14px sans-serif',
+        super.maxLabelWidthX,
+        super.maxLabelWidthY,
+        super.textMargin,
+        super.labelFormatX = _defaultLabelFormat,
+        super.labelFormatY = _defaultLabelFormat,
+        super.aspectRatio,
+        super.gridLineWidth,
+        super.gridLineStrokeStyle,
+        super.labelFillStyle,
+        super.labelFontStyle,
         this.dotRadius = const {keyAllGraph: 6},
         this.hoverDotRadiusOffset = const {keyAllGraph: 0},
         this.dotFillStyle = const {keyAllGraph: 'white'},
@@ -104,30 +104,15 @@ class LineGraphComponent extends CanvasBaseGraphComponent {
         this.dataLineStrokeStyle = const {keyAllGraph: '#aaaaaa'},
         this.dataLineWidth = const {keyAllGraph: 2},
         this.shadingFillStyle = const {keyAllGraph: 'rgba(0, 0, 0, 0.2)'},
-        String captionBgColor = '#2d2d2d',
-        String captionFgColor = 'white',
-        String captionFontFamily = 'sans-serif',
-        bool drawGridY = false,
+        super.captionBgColor,
+        super.captionFgColor,
+        super.captionFontFamily,
+        super.drawGridY,
         this.minWidth = 500,
         this.minWidthOverride = false,
         this.onHover,
         this.onHoverOut
-      }) : super(parent, id,
-        maxLabelWidthX: maxLabelWidthX,
-        maxLabelWidthY: maxLabelWidthY,
-        textMargin: textMargin,
-        labelFormatX: labelFormatX,
-        labelFormatY: labelFormatY,
-        aspectRatio: aspectRatio,
-        gridLineWidth: gridLineWidth,
-        gridLineStrokeStyle: gridLineStrokeStyle,
-        labelFillStyle: labelFillStyle,
-        labelFontStyle: labelFontStyle,
-        captionBgColor: captionBgColor,
-        captionFgColor: captionFgColor,
-        captionFontFamily: captionFontFamily,
-        drawGridY: drawGridY,
-  ) {
+      }) {
     _dataPoints = points.map(
             (key, value) =>
                 MapEntry<String, SplayTreeMap<double, double>>(
@@ -250,7 +235,7 @@ class LineGraphComponent extends CanvasBaseGraphComponent {
     var rangeY = gridMaxPxY - gridMinPxY;
     var spaceY = rangeY/(labelCountY-1);
 
-    ctx.strokeStyle = gridLineStrokeStyle;
+    ctx.strokeStyle = gridLineStrokeStyle.toJS;
     ctx.lineWidth = gridLineWidth;
     for (var i = 0; i < labelCountY; i++) {
       ctx.beginPath();
@@ -298,7 +283,7 @@ class LineGraphComponent extends CanvasBaseGraphComponent {
     ctx.shadowOffsetY = 0;
     ctx.textBaseline = 'middle';
     ctx.textAlign = 'right';
-    ctx.fillStyle = labelFillStyle;
+    ctx.fillStyle = labelFillStyle.toJS;
     for (var i = 0; i < labelCountY; i++) {
       ctx.fillText(labelFormatY(maxY - intervalY*i), gridMinPxX - textMargin, gridMinPxY + spaceY*i, maxLabelWidthY);
     }
@@ -415,7 +400,7 @@ class LineGraphComponent extends CanvasBaseGraphComponent {
       if (linePoints.isNotEmpty) {
         // Draw shading.
         ctx.beginPath();
-        ctx.fillStyle = shadingFillStyle[key] ?? shadingFillStyle[keyAllGraph];
+        ctx.fillStyle = (shadingFillStyle[key] ?? shadingFillStyle[keyAllGraph])!.toJS;
         ctx.moveTo(lerp(linePoints.firstKey()!, minX, maxX, gridMinPxX, gridMaxPxX), gridMaxPxY);
         linePoints.forEach((x, y) {
           ctx.lineTo(lerp(x, minX, maxX, gridMinPxX, gridMaxPxX), lerp(y, minY, maxY, gridMaxPxY, gridMinPxY));
@@ -434,7 +419,7 @@ class LineGraphComponent extends CanvasBaseGraphComponent {
         ctx.beginPath();
         ctx.moveTo(lerp(linePoints.firstKey()!, minX, maxX, gridMinPxX, gridMaxPxX), lerp(linePoints[linePoints.firstKey()!]!, minY, maxY, gridMaxPxY, gridMinPxY));
         ctx.lineWidth = dataLineWidth[key] ?? dataLineWidth[keyAllGraph]!;
-        ctx.strokeStyle = dataLineStrokeStyle[key] ?? dataLineStrokeStyle[keyAllGraph];
+        ctx.strokeStyle = (dataLineStrokeStyle[key] ?? dataLineStrokeStyle[keyAllGraph])!.toJS;
         linePoints.forEach((x, y) {
           ctx.lineTo(lerp(x, minX, maxX, gridMinPxX, gridMaxPxX), lerp(y, minY, maxY, gridMaxPxY, gridMinPxY));
         });
@@ -443,23 +428,23 @@ class LineGraphComponent extends CanvasBaseGraphComponent {
     });
 
     // Mask all lines and shading that are outside of the grid.
-    ctx.clearRect(0, gridMaxPxY, ctx.canvas.width!, ctx.canvas.height! - gridMaxPxY);
-    ctx.clearRect(0, 0, gridMinPxX, ctx.canvas.height!);
-    ctx.clearRect(0, 0, ctx.canvas.width!, gridMinPxY);
-    ctx.clearRect(gridMaxPxX, 0, ctx.canvas.width! - gridMaxPxX, ctx.canvas.height!);
+    ctx.clearRect(0, gridMaxPxY, ctx.canvas.width, ctx.canvas.height - gridMaxPxY);
+    ctx.clearRect(0, 0, gridMinPxX, ctx.canvas.height);
+    ctx.clearRect(0, 0, ctx.canvas.width, gridMinPxY);
+    ctx.clearRect(gridMaxPxX, 0, ctx.canvas.width - gridMaxPxX, ctx.canvas.height);
 
     _hoverPaths.clear();
     allMapPoints.forEach((key, value) {
       var dotPoints = allDotPoints[key]!;
       if (dotPoints.isNotEmpty) {
         // Draw dot points.
-        ctx.fillStyle = dotFillStyle[key] ?? dotFillStyle[keyAllGraph];
+        ctx.fillStyle = (dotFillStyle[key] ?? dotFillStyle[keyAllGraph])!.toJS;
         ctx.shadowColor = 'rgba(0, 0, 0, 0.2)';
         ctx.shadowBlur = 4;
         ctx.shadowOffsetX = 1;
         ctx.shadowOffsetY = 1;
         ctx.lineWidth = dotStrokeWidth[key] ?? dotStrokeWidth[keyAllGraph]!;
-        ctx.strokeStyle = dotStrokeStyle[key] ?? dotStrokeStyle[keyAllGraph];
+        ctx.strokeStyle = (dotStrokeStyle[key] ?? dotStrokeStyle[keyAllGraph])!.toJS;
         dotPoints.forEach((x, y) {
           var dot = Path2D();
           var radius = dotRadius[key] ?? dotRadius[keyAllGraph]!;
@@ -488,15 +473,15 @@ class LineGraphComponent extends CanvasBaseGraphComponent {
     if (_initialLabelCountX != null) return _initialLabelCountX!;
 
     var divider = 75;
-    if (ctx.canvas.width! < 600) {
+    if (ctx.canvas.width < 600) {
       divider = 75;
-    } else if (ctx.canvas.width! < 1200) {
+    } else if (ctx.canvas.width < 1200) {
       divider = 100;
     } else {
       divider = 200;
     }
 
-    return max((ctx.canvas.width!/divider).truncate(), 2);
+    return max((ctx.canvas.width/divider).truncate(), 2);
   }
 
   /// Gets how many labels the graph should display in Y axis.
@@ -508,15 +493,15 @@ class LineGraphComponent extends CanvasBaseGraphComponent {
     if (_initialLabelCountY != null) return _initialLabelCountY!;
 
     var divider = 45;
-    if (ctx.canvas.height! < 600) {
+    if (ctx.canvas.height < 600) {
       divider = 45;
-    } else if (ctx.canvas.height! < 1200) {
+    } else if (ctx.canvas.height < 1200) {
       divider = 80;
     } else {
       divider = 100;
     }
 
-    return max((ctx.canvas.height!/divider).truncate(), 2);
+    return max((ctx.canvas.height/divider).truncate(), 2);
   }
 
   /// Get the minimum (the first, the leftmost) X label value.
@@ -581,12 +566,12 @@ class LineGraphComponent extends CanvasBaseGraphComponent {
 
   @override
   double calcGridMaxPxX() {
-    return (ctx.canvas.width! - maxLabelWidthX/2).toDouble();
+    return (ctx.canvas.width - maxLabelWidthX/2).toDouble();
   }
 
   @override
   double calcGridMaxPxY() {
-    return (ctx.canvas.height! - textMargin - _textHeight).toDouble();
+    return (ctx.canvas.height - textMargin - _textHeight).toDouble();
   }
 
   @override
@@ -624,17 +609,17 @@ class LineGraphComponent extends CanvasBaseGraphComponent {
     var translateValueY = viewBoxY;
     var bb = _captionElem.getBBox();
     // Width, based on viewbox coordinate system.
-    var widthViewBox = bb.width!;
+    var widthViewBox = bb.width;
     // Height, based on viewbox coordinate system.
-    var heightViewBox = bb.height!;
+    var heightViewBox = bb.height;
     var rightestPointViewBox = viewBoxX + widthViewBox;
     var bottommostPointViewBox = viewBoxY + heightViewBox;
     // Outside range X, translate -width.
-    if (rightestPointViewBox > ctx.canvas.width!) {
+    if (rightestPointViewBox > ctx.canvas.width) {
       translateValueX -= widthViewBox;
     }
     // Outside range of Y too, translate -height.
-    if (bottommostPointViewBox > ctx.canvas.height!) {
+    if (bottommostPointViewBox > ctx.canvas.height) {
       translateValueY -= heightViewBox;
     }
 
@@ -664,7 +649,8 @@ class LineGraphComponent extends CanvasBaseGraphComponent {
         for (var entry in pointSet.value.entries) {
           var point = entry.key;
           var dot = entry.value;
-          if (ctx.isPointInPath(dot, event.offset.x, event.offset.y)) {
+          // TODO: ensure it is right to call isPointInPath this way
+          if (ctx.isPointInPath(dot, event.offsetX, event.offsetY.toJS)) {
             onPointHover(pointSet.key,
                 point.key,
                 point.value,

@@ -17,13 +17,11 @@ class PieChartComponent extends BaseGraphComponent {
   Map<String, double> _dataPoints = {};
   final Set<String> _activeGraphs = {};
 
-  late final ResizeObserver _resizeObserver = ResizeObserver((entries, observer) {
-    redraw();
-  });
+  late final ResizeObserver _resizeObserver = ResizeObserver(_resizeObserverCallback.toJS);
 
-  SvgSvgElement get _svgElem => queryById('$id-svg') as SvgSvgElement;
-  GElement get _labelElem => queryById('$id-svg-label') as GElement;
-  GElement get _pointsElem => queryById('$id-svg-points') as GElement;
+  SVGSVGElement get _svgElem => queryById('$id-svg') as SVGSVGElement;
+  SVGGElement get _labelElem => queryById('$id-svg-label') as SVGGElement;
+  SVGGElement get _pointsElem => queryById('$id-svg-points') as SVGGElement;
 
   PieChartComponent(super.parent, super.id, {
     this.maxLabelWidth = 50,
@@ -47,6 +45,10 @@ class PieChartComponent extends BaseGraphComponent {
         </svg>
     </div>
     ''';
+  }
+
+  void _resizeObserverCallback(entries, observer) {
+    redraw();
   }
 
   @override
@@ -78,7 +80,7 @@ class PieChartComponent extends BaseGraphComponent {
 
   @override
   void clearPoints() {
-    _pointsElem.children.clear();
+    _pointsElem.innerHTML = ''.toJS;
   }
 
   Map<String, double> _scale(Map<String, double> orig) {
@@ -96,7 +98,7 @@ class PieChartComponent extends BaseGraphComponent {
 
   @override
   void drawDataPoints() {
-    _pointsElem.children.clear();
+    _pointsElem.innerHTML = ''.toJS;
     if (_dataPoints.isEmpty) return;
 
     final centerX = _svgElem.clientWidth/2;
@@ -115,7 +117,7 @@ class PieChartComponent extends BaseGraphComponent {
       }
 
       if (dpe.value >= 1) {
-        _pointsElem.children.add(SvgElement.svg('<circle cx="$centerX" cy="$centerY" r="$gridR" fill="$fill" stroke="rgba(255, 255, 255, 0.1)" stroke-width="1" />'));
+        _pointsElem.insertAdjacentHTML('beforeend', '<circle cx="$centerX" cy="$centerY" r="$gridR" fill="$fill" stroke="rgba(255, 255, 255, 0.1)" stroke-width="1" />'.toJS);
         totalRadii = 1;
         break;
       } else {
@@ -125,7 +127,7 @@ class PieChartComponent extends BaseGraphComponent {
         var pointEnd = [gridR*sin(totalRadii+dataRadii) + r + dx, gridR*cos(totalRadii + dataRadii) + r + dy];
 
         var largeArc = value > 0.5 ? 1 : 0;
-        _pointsElem.children.add(SvgElement.svg('<path d="M$centerX,$centerY L${pointStart[0]},${pointStart[1]} A$gridR $gridR ${360*value} $largeArc 0 ${pointEnd[0]},${pointEnd[1]} Z" fill="$fill" stroke="rgba(255, 255, 255, 0.1)" stroke-width="1" />'));
+        _pointsElem.insertAdjacentHTML('beforeend', '<path d="M$centerX,$centerY L${pointStart[0]},${pointStart[1]} A$gridR $gridR ${360*value} $largeArc 0 ${pointEnd[0]},${pointEnd[1]} Z" fill="$fill" stroke="rgba(255, 255, 255, 0.1)" stroke-width="1" />'.toJS);
         totalRadii += dataRadii;
       }
     }
@@ -136,7 +138,7 @@ class PieChartComponent extends BaseGraphComponent {
 
   @override
   void drawLabels() {
-    _labelElem.children.clear();
+    _labelElem.innerHTML = ''.toJS;
 
     final r = min(_svgElem.clientWidth, _svgElem.clientHeight)/2;
     final dx = max(_svgElem.clientWidth/2 - r, 0);
@@ -152,7 +154,7 @@ class PieChartComponent extends BaseGraphComponent {
         var labelRadii = dataRadii/2;
         var p = [gridR*sin(totalRadii + labelRadii) + r + dx, gridR*cos(totalRadii + labelRadii) + r + dy];
 
-        _labelElem.children.add(SvgElement.svg('<text x="${p[0]}" y="${p[1]}" style="font: $labelFontStyle;fill: $labelFillStyle;text-anchor: middle;dominant-baseline: middle;">${_nf.format(dpe.value)}</text>'));
+        _labelElem.insertAdjacentHTML('beforeend', '<text x="${p[0]}" y="${p[1]}" style="font: $labelFontStyle;fill: $labelFillStyle;text-anchor: middle;dominant-baseline: middle;">${_nf.format(dpe.value)}</text>'.toJS);
       }
 
       totalRadii += dataRadii;

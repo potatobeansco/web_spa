@@ -33,7 +33,7 @@ abstract class BaseGraphComponent extends StringComponent  {
   /// Whether to draw Y grid lines.
   final bool drawGridY;
 
-  BaseGraphComponent(RenderComponent parent, String id,
+  BaseGraphComponent(super.parent, super.id,
       {
         this.textMargin = 15,
         this.aspectRatio = 1.5,
@@ -45,7 +45,7 @@ abstract class BaseGraphComponent extends StringComponent  {
         this.captionFgColor = 'white',
         this.captionFontFamily = 'sans-serif',
         this.drawGridY = false,
-      }) : super.empty(parent, id);
+      }) : super.empty();
 
   @protected
   void drawGrid([bool drawY = false]);
@@ -135,11 +135,11 @@ abstract class CanvasBaseGraphComponent extends BaseGraphComponent {
     return _canvasElem.context2D;
   }
 
-  CanvasElement get _canvasElem => queryById('$id-canvas') as CanvasElement;
-  SvgElement get _svgElem => queryById('$id-caption') as SvgElement;
-  GElement get _captionElem => queryById('$id-caption-g') as GElement;
-  RectElement get _captionRectElem => queryById('$id-caption-g-rect') as RectElement;
-  TextElement get _captionTextElem => queryById('$id-caption-g-text') as TextElement;
+  HTMLCanvasElement get _canvasElem => queryById('$id-canvas') as HTMLCanvasElement;
+  SVGSVGElement get _svgElem => queryById('$id-caption') as SVGSVGElement;
+  SVGGElement get _captionElem => queryById('$id-caption-g') as SVGGElement;
+  SVGRectElement get _captionRectElem => queryById('$id-caption-g-rect') as SVGRectElement;
+  SVGTextElement get _captionTextElem => queryById('$id-caption-g-text') as SVGTextElement;
 
   CanvasBaseGraphComponent(super.parent, super.id, {
     this.maxLabelWidthX = 50,
@@ -197,27 +197,26 @@ abstract class CanvasBaseGraphComponent extends BaseGraphComponent {
   double getApproxTextHeight() {
     ctx.font = labelFontStyle;
     var metric = ctx.measureText('100'); // 100 is a test text. It does not matter what is put here.
-    if (metric.fontBoundingBoxAscent != null) return metric.fontBoundingBoxAscent!.toDouble();
-    return ctx.measureText('M').width!.toDouble();
+    return metric.fontBoundingBoxAscent.toDouble();
   }
 
   void redraw() {
     var minWidth = getCalculatedMinWidth();
     var canvasWidth = max(minWidth, elem.clientWidth);
     ctx.canvas.width = canvasWidth.toInt();
-    ctx.canvas.height = (elem.offsetWidth/aspectRatio).truncate();
+    ctx.canvas.height = (elem.getBoundingClientRect().width/aspectRatio).truncate();
     _textHeight = getApproxTextHeight();
     calculateMinMaxGrid();
     drawGrid(drawGridY);
     drawDataPoints();
     drawLabels();
     _svgElem.setAttribute('viewBox', '0 0 ${ctx.canvas.width} ${ctx.canvas.height}');
-    _svgElem.setAttribute('width', canvasWidth);
-    _svgElem.setAttribute('height', (elem.offsetWidth/aspectRatio).truncate().toString());
+    _svgElem.setAttribute('width', canvasWidth.toString());
+    _svgElem.setAttribute('height', (elem.getBoundingClientRect().width/aspectRatio).truncate().toString());
   }
 
   void clearDrawing() {
-    ctx.clearRect(0, 0, ctx.canvas.width!.toDouble(), ctx.canvas.height!.toDouble());
+    ctx.clearRect(0, 0, ctx.canvas.width.toDouble(), ctx.canvas.height.toDouble());
     hideCaption();
   }
 

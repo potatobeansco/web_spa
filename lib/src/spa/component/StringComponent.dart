@@ -1,4 +1,4 @@
-part of spa;
+part of '../../../spa.dart';
 
 /// A subclass of [Component] designed to be rendered through other [RenderComponent]
 /// using string interpolation.
@@ -77,7 +77,7 @@ abstract class StringComponent extends Component with MEventHandler {
   }
 
   @override
-  ElementList<Element> queryByClass(String elemClass) {
+  NodeList queryByClass(String elemClass) {
     assertElementAttached();
     return super.queryByClass(elemClass);
   }

@@ -1,4 +1,4 @@
-part of spa;
+part of '../../../spa.dart';
 
 class HttpUtilResponse {
   int? statusCode;

@@ -1,20 +1,23 @@
-import 'dart:html';
+library;
+
+import 'dart:js_interop';
+import 'package:web/web.dart';
 
 class Log {
   static void debug(Object? arg) {
-    window.console.debug(arg);
+    console.debug(arg?.toJSBox);
   }
 
   static void info(Object? arg) {
-    window.console.info(arg);
+    console.info(arg?.toJSBox);
   }
 
   static void warn(Object? arg) {
-    window.console.warn(arg);
+    console.warn(arg?.toJSBox);
   }
 
   static void error(Object? arg) {
-    window.console.error(arg);
+    console.error(arg?.toJSBox);
   }
 }
 
@@ -22,18 +25,18 @@ mixin MLogging {
   String get className;
 
   void logDebug(Object? arg) {
-    Log.debug('[$className] $arg');
+    Log.debug('[$className] $arg'.toJS);
   }
 
   void logInfo(Object? arg) {
-    Log.info('[$className] $arg');
+    Log.info('[$className] $arg'.toJS);
   }
 
   void logWarn(Object? arg) {
-    Log.warn('[$className] $arg');
+    Log.warn('[$className] $arg'.toJS);
   }
 
   void logError(Object? arg) {
-    Log.error('[$className] $arg');
+    Log.error('[$className] $arg'.toJS);
   }
 }

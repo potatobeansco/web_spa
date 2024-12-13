@@ -1,4 +1,4 @@
-part of spa;
+part of '../../../spa.dart';
 
 class Route {
   /// The route ID for this route, must be unique, and needs
@@ -8,10 +8,10 @@ class Route {
   /// and the route has the same id as the currently rendered route, router is
   /// intended to do nothing.
   late String _id;
-  late beforeRenderFunc beforeRender;
-  late afterRenderFunc afterRender;
-  late beforeUnrenderFunc beforeUnrender;
-  late afterUnrenderFunc afterUnrender;
+  late BeforeRenderFunc beforeRender;
+  late AfterRenderFunc afterRender;
+  late BeforeUnrenderFunc beforeUnrender;
+  late AfterUnrenderFunc afterUnrender;
   FutureOr<RenderComponent> component;
 
   String get id => _id;
@@ -20,18 +20,18 @@ class Route {
       String id,
       this.component,
       {
-        beforeRenderFunc? beforeRender,
-        afterRenderFunc? afterRender,
-        beforeUnrenderFunc? beforeUnrender,
-        afterUnrenderFunc? afterUnrender,
+        BeforeRenderFunc? beforeRender,
+        AfterRenderFunc? afterRender,
+        BeforeUnrenderFunc? beforeUnrender,
+        AfterUnrenderFunc? afterUnrender,
       }) {
 
 
     _id = id;
-    var fillerFunctionBool = () {
+    Future<bool> fillerFunctionBool() {
       return Future.value(true);
-    };
-    var fillerFunctionVoid = () async {};
+    }
+    Future<void> fillerFunctionVoid() async {}
 
     this.beforeRender = beforeRender ?? fillerFunctionBool;
     this.afterRender = afterRender ?? fillerFunctionVoid;
@@ -40,7 +40,7 @@ class Route {
   }
 }
 
-typedef beforeRenderFunc = Future<bool> Function();
-typedef afterRenderFunc = Future Function();
-typedef beforeUnrenderFunc = Future<bool> Function();
-typedef afterUnrenderFunc = Future Function();
+typedef BeforeRenderFunc = Future<bool> Function();
+typedef AfterRenderFunc = Future Function();
+typedef BeforeUnrenderFunc = Future<bool> Function();
+typedef AfterUnrenderFunc = Future Function();

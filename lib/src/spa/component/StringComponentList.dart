@@ -29,8 +29,8 @@ class StringComponentList<T extends StringComponent> extends ListBase<T> with ME
   List<T> operator +(List<T> other) => _l + other;
 
   @override
-  void add(T value) {
-    _l.add(value);
+  void add(T element) {
+    _l.add(element);
   }
 
   @override
@@ -50,8 +50,8 @@ class StringComponentList<T extends StringComponent> extends ListBase<T> with ME
   }
 
   @override
-  void fillRange(int start, int end, [T? fillValue]) {
-    _l.fillRange(start, end, fillValue);
+  void fillRange(int start, int end, [T? fill]) {
+    _l.fillRange(start, end, fill);
   }
 
   @override
@@ -96,7 +96,7 @@ class StringComponentList<T extends StringComponent> extends ListBase<T> with ME
   int get length => _l.length;
 
   @override
-  bool remove(Object? value) => _l.remove(value);
+  bool remove(Object? element) => _l.remove(element);
 
   @override
   T removeAt(int index) => _l.removeAt(index);
@@ -115,8 +115,8 @@ class StringComponentList<T extends StringComponent> extends ListBase<T> with ME
   }
 
   @override
-  void replaceRange(int start, int end, Iterable<T> iterable) {
-    _l.replaceRange(start, end, iterable);
+  void replaceRange(int start, int end, Iterable<T> newContents) {
+    _l.replaceRange(start, end, newContents);
   }
 
   @override
@@ -153,25 +153,25 @@ class StringComponentList<T extends StringComponent> extends ListBase<T> with ME
   @override
   String toString() {
     var retval = '';
-    _l.forEach((c) {
+    for (var c in _l) {
       retval += c.toString();
-    });
+    }
 
     return retval;
   }
 
   @override
   void loadEventHandlers() {
-    _l.forEach((element) {
+    for (var element in _l) {
       element.loadEventHandlers();
-    });
+    }
   }
 
   @override
   void unloadEventHandlers() {
     super.unloadEventHandlers();
-    _l.forEach((element) {
+    for (var element in _l) {
       element.unloadEventHandlers();
-    });
+    }
   }
 }

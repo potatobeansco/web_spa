@@ -1,4 +1,4 @@
-part of spa;
+part of '../../../spa.dart';
 
 class ComponentReferenceNotExistException implements Exception {
   String id;

@@ -1,15 +1,15 @@
-library graph;
+library;
 
 import 'dart:async';
 import 'dart:collection';
-import 'dart:html';
+import 'dart:js_interop';
 import 'dart:math';
-import 'dart:svg';
 
 import 'package:intl/intl.dart';
 import 'package:meta/meta.dart';
 import 'package:spa/spa.dart';
 import 'package:csslib/parser.dart';
+import 'package:web/web.dart';
 
 part 'src/graph/BaseGraphComponent.dart';
 part 'src/graph/BarChartComponent.dart';

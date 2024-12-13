@@ -18,15 +18,13 @@ mixin MEventHandler {
 
   /// Creates an onClick event on [node] (has to be an [Element] or [Document] type).
   /// Call this in [loadEventHandlers].
-  void addOnClickTo(GlobalEventHandlers node, void Function(Event) onClick) {
-    if (node is! Element && node is! Document) throw ArgumentError('node must be a subtype of Element or Document');
+  void addOnClickTo(Element node, void Function(Event) onClick) {
     _eventSubscriptions.add(node.onClick.listen(onClick));
   }
 
   /// Creates an onChange event on [node] (has to be an [Element] or [Document] type).
   /// Call this in [loadEventHandlers].
-  void addOnChangeTo(GlobalEventHandlers node, void Function(Event) onChange) {
-    if (node is! Element && node is! Document) throw ArgumentError('node must be a subtype of Element or Document');
+  void addOnChangeTo(Element node, void Function(Event) onChange) {
     _eventSubscriptions.add(node.onChange.listen(onChange));
   }
 
@@ -37,9 +35,9 @@ mixin MEventHandler {
   /// Unloads all event subscriptions previously added under loadEventHandlers.
   @mustCallSuper
   void unloadEventHandlers() {
-    _eventSubscriptions.forEach((subs) {
+    for (var subs in _eventSubscriptions) {
       subs.cancel();
-    });
+    }
     _eventSubscriptions.clear();
   }
 }

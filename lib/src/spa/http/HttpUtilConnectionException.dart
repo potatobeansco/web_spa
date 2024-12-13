@@ -1,5 +1,6 @@
-part of spa;
+part of '../../../spa.dart';
 
+@Deprecated('This exception is too generic and is no longer thrown since using package:http')
 class HttpUtilConnectionException implements Exception {
   final bool? lengthComputable;
   final int? loaded;

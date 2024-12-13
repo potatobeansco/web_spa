@@ -71,8 +71,8 @@ class Waypoint {
       _offset = _element.getBoundingClientRect().height/2;
     }
 
-    _onScrollSubs = document.onScroll.listen((event) {
-      if ((_element.getBoundingClientRect().top + _offset) <= window.innerHeight!) {
+    _onScrollSubs = document.documentElement!.onScroll.listen((event) {
+      if ((_element.getBoundingClientRect().top + _offset) <= window.innerHeight) {
         _handler();
       }
     });

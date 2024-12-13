@@ -16,17 +16,17 @@ class ComponentRouter with MLogging {
   late String currentPath;
   Route? currentRoute;
   final Element parentElement;
-  final LinkedHashMap<String, _ComponentRoute> matchMap = LinkedHashMap<String, _ComponentRoute>();
+  final LinkedHashMap<String, _ComponentRoute> _matchMap = LinkedHashMap<String, _ComponentRoute>();
   final bool doNotRenderSameRoute;
 
   StreamSubscription<PopStateEvent>? _onPopStateSubscription;
 
   ComponentRouter(this.parentElement, {this.doNotRenderSameRoute = true});
 
-  static StreamSubscription<MouseEvent> attachOnPopStateEmitter(AnchorElement onClickElem) {
+  static StreamSubscription<MouseEvent> attachOnPopStateEmitter(HTMLAnchorElement onClickElem) {
     return onClickElem.onClick.listen((event) {
       event.preventDefault();
-      emitPopState(onClickElem.href!);
+      emitPopState(onClickElem.href);
     });
   }
 
@@ -50,7 +50,7 @@ class ComponentRouter with MLogging {
   }
 
   void handleRoute(String pattern, ComponentRouterHandleFunc matcherFunc, {bool? prefixMatch}) {
-    matchMap[pattern] = _ComponentRoute(matcherFunc, prefixMatch: prefixMatch);
+    _matchMap[pattern] = _ComponentRoute(matcherFunc, prefixMatch: prefixMatch);
   }
 
   @Deprecated('Automatic extraction will be replaced with explicit match prefix/not')
@@ -176,7 +176,7 @@ class ComponentRouter with MLogging {
     // TODO: currentPath and currentRoute should be set both at the same time
     currentPath = currentUrl.path;
     var isMatch = false;
-    for (var i in matchMap.entries) {
+    for (var i in _matchMap.entries) {
       var pattern = i.key;
       var entry = i.value;
       Map<String, String>? params;

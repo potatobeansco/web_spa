@@ -1,4 +1,4 @@
-part of spa;
+part of '../../../spa.dart';
 
 typedef OnProgressFunc = void Function(int? loaded, int? total);
 
@@ -8,237 +8,191 @@ class HttpUtil {
   static const headerTypeJson = {'Content-Type': 'application/json'};
   static const headerContentTypeJson = {'Content-Type': 'application/json'};
 
-  static Future<HttpUtilResponse> get(String url, {List<int> expectedStatusCodes = const [200], Map<String, String> requestHeaders = const {}, String responseType = '', OnProgressFunc? onProgress}) {
-    var completer = Completer<HttpUtilResponse>();
-
-    var req = HttpRequest();
-    req.open('GET', url);
-    req.responseType = responseType;
-
-    requestHeaders.forEach((key, value) {
-      req.setRequestHeader(key, value);
-    });
-
-    if (onProgress != null) {
-      req.onProgress.listen((event) {
-        onProgress(event.loaded, event.total);
-      });
+  static Future<HttpUtilResponse> get(String url, {List<int> expectedStatusCodes = const [200], Map<String, String> requestHeaders = const {}, String responseType = '', OnProgressFunc? onProgress, http.Client? client}) async {
+    var req = http.Request('GET', Uri.parse(url));
+    var c = client ?? http.Client();
+    var resp = await c.send(req);
+    var total = int.tryParse(resp.headers['Content-Length'] ?? '');
+    if (!expectedStatusCodes.contains(resp.statusCode)) {
+      throw HttpUtilUnexpectedException(HttpUtilResponse(resp.statusCode, utf8.decode(await resp.stream.toBytes(), allowMalformed: true), resp.headers['Content-Type'], total));
     }
 
-    req.onLoad.listen((event) {
-      var length = req.getResponseHeader('Content-Length');
-      var response = HttpUtilResponse(req.status, req.response, req.getResponseHeader('Content-Type'), length != null ? int.tryParse(length) : null);
-      if (expectedStatusCodes.contains(req.status)) {
-        completer.complete(response);
-      } else {
-        completer.completeError(HttpUtilUnexpectedException(response));
-      }
-    });
-
-    req.onError.listen((event) {
-      completer.completeError(HttpUtilConnectionException(event.lengthComputable, loaded: event.loaded, total: event.total));
-    });
-
-    req.send();
-    return completer.future;
+    int loaded = 0;
+    var completer = Completer<Uint8List>();
+    var sink = ByteConversionSink.withCallback((bytes) => completer.complete(Uint8List.fromList(bytes)));
+    var subs = resp.stream.listen((chunk) {
+        sink.add(chunk);
+        if (onProgress != null) {
+          loaded += chunk.length;
+          onProgress(loaded, total);
+        }
+      },
+      onError: completer.completeError,
+      onDone: sink.close,
+      cancelOnError: true
+    );
+    var bytes = await completer.future;
+    await subs.cancel();
+    return HttpUtilResponse(resp.statusCode, utf8.decode(bytes), resp.headers['Content-Type'], total);
   }
 
-  static Future<HttpUtilResponse> post(String url, {String? body, List<int> expectedStatusCodes = const [200], Map<String, String> requestHeaders = const {}, String responseType = '', OnProgressFunc? onProgress, OnProgressFunc? uploadOnProgress}) {
-    var completer = Completer<HttpUtilResponse>();
+  static Future<HttpUtilResponse> post(String url, {String? body, List<int> expectedStatusCodes = const [200], Map<String, String> requestHeaders = const {}, String responseType = '', OnProgressFunc? onProgress, OnProgressFunc? uploadOnProgress, http.Client? client}) async {
+    var req = http.Request('POST', Uri.parse(url));
+    if (body != null) req.body = body;
 
-    var req = HttpRequest();
-    req.open('POST', url);
-    req.responseType = responseType;
-
-    requestHeaders.forEach((key, value) {
-      req.setRequestHeader(key, value);
-    });
-
-    if (onProgress != null) {
-      req.onProgress.listen((event) {
-        onProgress(event.loaded, event.total);
-      });
+    var c = client ?? http.Client();
+    var resp = await c.send(req);
+    var total = int.tryParse(resp.headers['Content-Length'] ?? '');
+    if (!expectedStatusCodes.contains(resp.statusCode)) {
+      throw HttpUtilUnexpectedException(HttpUtilResponse(resp.statusCode, utf8.decode(await resp.stream.toBytes(), allowMalformed: true), resp.headers['Content-Type'], total));
     }
 
-    if (uploadOnProgress != null) {
-      req.upload.onProgress.listen((event) {
-        uploadOnProgress(event.loaded, event.total);
-      });
-    }
-
-    req.onLoad.listen((event) {
-      var length = req.getResponseHeader('Content-Length');
-      var response = HttpUtilResponse(req.status, req.response, req.getResponseHeader('Content-Type'), length != null ? int.tryParse(length) : null);
-      if (expectedStatusCodes.contains(req.status)) {
-        completer.complete(response);
-      } else {
-        completer.completeError(HttpUtilUnexpectedException(response));
+    int loaded = 0;
+    var completer = Completer<Uint8List>();
+    var sink = ByteConversionSink.withCallback((bytes) => completer.complete(Uint8List.fromList(bytes)));
+    var subs = resp.stream.listen((chunk) {
+      sink.add(chunk);
+      if (onProgress != null) {
+        loaded += chunk.length;
+        onProgress(loaded, total);
       }
-    });
-
-    req.onError.listen((event) {
-      completer.completeError(HttpUtilConnectionException(event.lengthComputable, loaded: event.loaded, total: event.total));
-    });
-
-    req.send(body);
-    return completer.future;
+    },
+        onError: completer.completeError,
+        onDone: sink.close,
+        cancelOnError: true
+    );
+    var bytes = await completer.future;
+    await subs.cancel();
+    return HttpUtilResponse(resp.statusCode, utf8.decode(bytes), resp.headers['Content-Type'], total);
   }
 
-  static Future<HttpUtilResponse> patch(String url, {String? body, List<int> expectedStatusCodes = const [200], Map<String, String> requestHeaders = const {}, String responseType = '', OnProgressFunc? onProgress, OnProgressFunc? uploadOnProgress}) {
-    var completer = Completer<HttpUtilResponse>();
+  static Future<HttpUtilResponse> patch(String url, {String? body, List<int> expectedStatusCodes = const [200], Map<String, String> requestHeaders = const {}, String responseType = '', OnProgressFunc? onProgress, OnProgressFunc? uploadOnProgress, http.Client? client}) async {
+    var req = http.Request('GET', Uri.parse(url));
+    if (body != null) req.body = body;
 
-    var req = HttpRequest();
-    req.open('PATCH', url);
-    req.responseType = responseType;
-
-    requestHeaders.forEach((key, value) {
-      req.setRequestHeader(key, value);
-    });
-
-    if (onProgress != null) {
-      req.onProgress.listen((event) {
-        onProgress(event.loaded, event.total);
-      });
+    var c = client ?? http.Client();
+    var resp = await c.send(req);
+    var total = int.tryParse(resp.headers['Content-Length'] ?? '');
+    if (!expectedStatusCodes.contains(resp.statusCode)) {
+      throw HttpUtilUnexpectedException(HttpUtilResponse(resp.statusCode, utf8.decode(await resp.stream.toBytes(), allowMalformed: true), resp.headers['Content-Type'], total));
     }
 
-    if (uploadOnProgress != null) {
-      req.upload.onProgress.listen((event) {
-        uploadOnProgress(event.loaded, event.total);
-      });
-    }
-
-    req.onLoad.listen((event) {
-      var length = req.getResponseHeader('Content-Length');
-      var response = HttpUtilResponse(req.status, req.response, req.getResponseHeader('Content-Type'), length != null ? int.tryParse(length) : null);
-      if (expectedStatusCodes.contains(req.status)) {
-        completer.complete(response);
-      } else {
-        completer.completeError(HttpUtilUnexpectedException(response));
+    int loaded = 0;
+    var completer = Completer<Uint8List>();
+    var sink = ByteConversionSink.withCallback((bytes) => completer.complete(Uint8List.fromList(bytes)));
+    var subs = resp.stream.listen((chunk) {
+      sink.add(chunk);
+      if (onProgress != null) {
+        loaded += chunk.length;
+        onProgress(loaded, total);
       }
-    });
-
-    req.onError.listen((event) {
-      completer.completeError(HttpUtilConnectionException(event.lengthComputable, loaded: event.loaded, total: event.total));
-    });
-
-    req.send(body);
-    return completer.future;
+    },
+        onError: completer.completeError,
+        onDone: sink.close,
+        cancelOnError: true
+    );
+    var bytes = await completer.future;
+    await subs.cancel();
+    return HttpUtilResponse(resp.statusCode, utf8.decode(bytes), resp.headers['Content-Type'], total);
   }
 
-  static Future<HttpUtilResponse> postFormData(String url, FormData body, {List<int> expectedStatusCodes = const [200], Map<String, String> requestHeaders = const {}, String responseType = '', OnProgressFunc? onProgress, OnProgressFunc? uploadOnProgress}) {
-    var completer = Completer<HttpUtilResponse>();
+  static Future<HttpUtilResponse> postFormData(String url, Map<String, String> fields, Map<String, File> files, {List<int> expectedStatusCodes = const [200], Map<String, String> requestHeaders = const {}, String responseType = '', OnProgressFunc? onProgress, OnProgressFunc? uploadOnProgress, http.Client? client}) async {
+    var mFiles = <http.MultipartFile>[];
 
-    var req = HttpRequest();
-    req.open('POST', url);
-    req.responseType = responseType;
-
-    requestHeaders.forEach((key, value) {
-      req.setRequestHeader(key, value);
-    });
-
-    if (onProgress != null) {
-      req.upload.onProgress.listen((event) {
-        onProgress(event.loaded, event.total);
-      });
-    }
-
-    if (uploadOnProgress != null) {
-      req.upload.onProgress.listen((event) {
-        uploadOnProgress(event.loaded, event.total);
-      });
-    }
-
-    req.onLoad.listen((event) {
-      var length = req.getResponseHeader('Content-Length');
-      var response = HttpUtilResponse(req.status, req.response, req.getResponseHeader('Content-Type'), length != null ? int.tryParse(length) : null);
-      if (expectedStatusCodes.contains(req.status)) {
-        completer.complete(response);
-      } else {
-        completer.completeError(HttpUtilUnexpectedException(response));
-      }
-    });
-
-    req.onError.listen((event) {
-      completer.completeError(HttpUtilConnectionException(event.lengthComputable, loaded: event.loaded, total: event.total));
-    });
-
-    req.send(body);
-    return completer.future;
+    for (var f in files.entries) {
+      var k = f.key;
+      var v = f.value;
+      var data = (await f.value.arrayBuffer().toDart);
+      var mf = http.MultipartFile.fromBytes(k, data.toDart.asUint8List(), filename: v.name, contentType: http_parser.MediaType.parse(v.type));
+      mFiles.add(mf);
   }
 
-  static Future<HttpUtilResponse> put(String url, {String? body, List<int> expectedStatusCodes = const [200], Map<String, String> requestHeaders = const {}, String responseType = '', OnProgressFunc? onProgress, OnProgressFunc? uploadOnProgress}) {
-    var completer = Completer<HttpUtilResponse>();
+    var req = http.MultipartRequest('POST', Uri.parse(url))
+      ..fields.addAll(fields)
+      ..files.addAll(mFiles);
 
-    var req = HttpRequest();
-    req.open('PUT', url);
-    req.responseType = responseType;
-
-    requestHeaders.forEach((key, value) {
-      req.setRequestHeader(key, value);
-    });
-
-    if (onProgress != null) {
-      req.upload.onProgress.listen((event) {
-        onProgress(event.loaded, event.total);
-      });
+    var c = client ?? http.Client();
+    var resp = await c.send(req);
+    var total = int.tryParse(resp.headers['Content-Length'] ?? '');
+    if (!expectedStatusCodes.contains(resp.statusCode)) {
+      throw HttpUtilUnexpectedException(HttpUtilResponse(resp.statusCode, utf8.decode(await resp.stream.toBytes(), allowMalformed: true), resp.headers['Content-Type'], total));
     }
 
-    if (uploadOnProgress != null) {
-      req.upload.onProgress.listen((event) {
-        uploadOnProgress(event.loaded, event.total);
-      });
-    }
-
-    req.onLoad.listen((event) {
-      var length = req.getResponseHeader('Content-Length');
-      var response = HttpUtilResponse(req.status, req.response, req.getResponseHeader('Content-Type'), length != null ? int.tryParse(length) : null);
-      if (expectedStatusCodes.contains(req.status)) {
-        completer.complete(response);
-      } else {
-        completer.completeError(HttpUtilUnexpectedException(response));
+    int loaded = 0;
+    var completer = Completer<Uint8List>();
+    var sink = ByteConversionSink.withCallback((bytes) => completer.complete(Uint8List.fromList(bytes)));
+    var subs = resp.stream.listen((chunk) {
+      sink.add(chunk);
+      if (onProgress != null) {
+        loaded += chunk.length;
+        onProgress(loaded, total);
       }
-    });
-
-    req.onError.listen((event) {
-      completer.completeError(HttpUtilConnectionException(event.lengthComputable, loaded: event.loaded, total: event.total));
-    });
-
-    req.send(body);
-    return completer.future;
+    },
+        onError: completer.completeError,
+        onDone: sink.close,
+        cancelOnError: true
+    );
+    var bytes = await completer.future;
+    await subs.cancel();
+    return HttpUtilResponse(resp.statusCode, utf8.decode(bytes), resp.headers['Content-Type'], total);
   }
 
-  static Future<HttpUtilResponse> delete(String url, {List<int> expectedStatusCodes = const [200], Map<String, String> requestHeaders = const {}, String responseType = '', OnProgressFunc? onProgress}) {
-    var completer = Completer<HttpUtilResponse>();
+  static Future<HttpUtilResponse> put(String url, {String? body, List<int> expectedStatusCodes = const [200], Map<String, String> requestHeaders = const {}, String responseType = '', OnProgressFunc? onProgress, OnProgressFunc? uploadOnProgress, http.Client? client}) async {
+    var req = http.Request('GET', Uri.parse(url));
+    if (body != null) req.body = body;
 
-    var req = HttpRequest();
-    req.open('DELETE', url);
-    req.responseType = responseType;
-
-    requestHeaders.forEach((key, value) {
-      req.setRequestHeader(key, value);
-    });
-
-    if (onProgress != null) {
-      req.onProgress.listen((event) {
-        onProgress(event.loaded, event.total);
-      });
+    var c = client ?? http.Client();
+    var resp = await c.send(req);
+    var total = int.tryParse(resp.headers['Content-Length'] ?? '');
+    if (!expectedStatusCodes.contains(resp.statusCode)) {
+      throw HttpUtilUnexpectedException(HttpUtilResponse(resp.statusCode, utf8.decode(await resp.stream.toBytes(), allowMalformed: true), resp.headers['Content-Type'], total));
     }
 
-    req.onLoad.listen((event) {
-      var length = req.getResponseHeader('Content-Length');
-      var response = HttpUtilResponse(req.status, req.response, req.getResponseHeader('Content-Type'), length != null ? int.tryParse(length) : null);
-      if (expectedStatusCodes.contains(req.status)) {
-        completer.complete(response);
-      } else {
-        completer.completeError(HttpUtilUnexpectedException(response));
+    int loaded = 0;
+    var completer = Completer<Uint8List>();
+    var sink = ByteConversionSink.withCallback((bytes) => completer.complete(Uint8List.fromList(bytes)));
+    var subs = resp.stream.listen((chunk) {
+      sink.add(chunk);
+      if (onProgress != null) {
+        loaded += chunk.length;
+        onProgress(loaded, total);
       }
-    });
+    },
+        onError: completer.completeError,
+        onDone: sink.close,
+        cancelOnError: true
+    );
+    var bytes = await completer.future;
+    await subs.cancel();
+    return HttpUtilResponse(resp.statusCode, utf8.decode(bytes), resp.headers['Content-Type'], total);
+  }
 
-    req.onError.listen((event) {
-      completer.completeError(HttpUtilConnectionException(event.lengthComputable, loaded: event.loaded, total: event.total));
-    });
+  static Future<HttpUtilResponse> delete(String url, {List<int> expectedStatusCodes = const [200], Map<String, String> requestHeaders = const {}, String responseType = '', OnProgressFunc? onProgress, http.Client? client}) async {
+    var req = http.Request('DELETE', Uri.parse(url));
 
-    req.send();
-    return completer.future;
+    var c = client ?? http.Client();
+    var resp = await c.send(req);
+    var total = int.tryParse(resp.headers['Content-Length'] ?? '');
+    if (!expectedStatusCodes.contains(resp.statusCode)) {
+      throw HttpUtilUnexpectedException(HttpUtilResponse(resp.statusCode, utf8.decode(await resp.stream.toBytes(), allowMalformed: true), resp.headers['Content-Type'], total));
+    }
+
+    int loaded = 0;
+    var completer = Completer<Uint8List>();
+    var sink = ByteConversionSink.withCallback((bytes) => completer.complete(Uint8List.fromList(bytes)));
+    var subs = resp.stream.listen((chunk) {
+      sink.add(chunk);
+      if (onProgress != null) {
+        loaded += chunk.length;
+        onProgress(loaded, total);
+      }
+    },
+        onError: completer.completeError,
+        onDone: sink.close,
+        cancelOnError: true
+    );
+    var bytes = await completer.future;
+    await subs.cancel();
+    return HttpUtilResponse(resp.statusCode, utf8.decode(bytes), resp.headers['Content-Type'], total);
   }
 }

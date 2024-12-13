@@ -60,10 +60,10 @@ class StackedBarChartComponent extends BaseGraphComponent {
   final LinkedHashMap<String, Map<String, double?>> _dataPoints = LinkedHashMap();
   final Set<String> _activeGraphs = {};
 
-  SvgSvgElement get _svgElem => queryById('$id-svg') as SvgSvgElement;
-  GElement get _gridElem => queryById('$id-svg-grid') as GElement;
-  GElement get _labelElem => queryById('$id-svg-label') as GElement;
-  GElement get _pointsElem => queryById('$id-svg-points') as GElement;
+  SVGSVGElement get _svgElem => queryById('$id-svg') as SVGSVGElement;
+  SVGGElement get _gridElem => queryById('$id-svg-grid') as SVGGElement;
+  SVGGElement get _labelElem => queryById('$id-svg-label') as SVGGElement;
+  SVGGElement get _pointsElem => queryById('$id-svg-points') as SVGGElement;
 
   StackedBarChartComponent(super.parent, super.id, {
     this.maxLabelWidthX = 50,
@@ -299,7 +299,7 @@ class StackedBarChartComponent extends BaseGraphComponent {
 
   @override
   void clearPoints() {
-    _pointsElem.children.clear();
+    _pointsElem.innerHTML = ''.toJS;
   }
 
   @override
@@ -325,7 +325,7 @@ class StackedBarChartComponent extends BaseGraphComponent {
       spaceX = 0;
     }
 
-    List<Element> rects = [];
+    List<String> rects = [];
     for (var x in keys) {
       if (_dataPoints[x] == null) continue;
       var mapPoints = Map<String, double?>.from(_dataPoints[x]!);
@@ -375,18 +375,18 @@ class StackedBarChartComponent extends BaseGraphComponent {
         }
 
         var fill = chartFillStyle[graphName] ?? chartFillStyle[keyAllGraph]!;
-        var rect = SvgElement.svg('<rect x="${barMinPxX + offset}" y="$startY" width="$barWidth" height="$heightY" fill="$fill" />');
+        var rect = '<rect x="${barMinPxX + offset}" y="$startY" width="$barWidth" height="$heightY" fill="$fill" />';
         rects.add(rect);
       }
       barIndex++;
     }
 
-    _pointsElem.children.addAll(rects);
+    _pointsElem.insertAdjacentHTML('beforeend', rects.join().toJS);
   }
 
   @override
   void drawGrid([bool drawY = false]) {
-    _gridElem.children.clear();
+    _gridElem.innerHTML = ''.toJS;
 
     _svgElem.style.minWidth = '$gridMaxPxX';
 
@@ -394,9 +394,9 @@ class StackedBarChartComponent extends BaseGraphComponent {
     var rangeY = gridMaxPxY - gridMinPxY;
     var spaceY = rangeY/(labelCountY-1);
 
-    List<Element> lines = [];
+    List<String> lines = [];
     for (var i = 0; i < labelCountY; i++) {
-      lines.add(SvgElement.svg('<line x1="$gridMinPxX" y1="${gridMinPxY + spaceY*i}" x2="$gridMaxPxX" y2="${gridMinPxY + spaceY*i}" stroke-width="$gridLineWidth" stroke="$gridLineStrokeStyle" />'));
+      lines.add('<line x1="$gridMinPxX" y1="${gridMinPxY + spaceY*i}" x2="$gridMaxPxX" y2="${gridMinPxY + spaceY*i}" stroke-width="$gridLineWidth" stroke="$gridLineStrokeStyle" />');
     }
 
     if (drawY) {
@@ -406,16 +406,16 @@ class StackedBarChartComponent extends BaseGraphComponent {
       var rangeX  = labelMaxPxX - labelMinPxX;
       var spaceX = rangeX/(labelCountX-1);
       for (var i = 0; i < labelCountX; i++) {
-        lines.add(SvgElement.svg('<line x1="${labelMinPxX + spaceX*i}" y1="$gridMinPxY" x2="${labelMinPxX + spaceX*i}" y2="$gridMaxPxY" stroke-width="$gridLineWidth" stroke="$gridLineStrokeStyle" />'));
+        lines.add('<line x1="${labelMinPxX + spaceX*i}" y1="$gridMinPxY" x2="${labelMinPxX + spaceX*i}" y2="$gridMaxPxY" stroke-width="$gridLineWidth" stroke="$gridLineStrokeStyle" />');
       }
     }
 
-    _gridElem.children.addAll(lines);
+    _gridElem.insertAdjacentHTML('beforeend', lines.join().toJS);
   }
 
   @override
   void drawLabels() {
-    _labelElem.children.clear();
+    _labelElem.innerHTML = ''.toJS;
 
     var labelCountX = keys.length;
     var labelCountY = getLabelCountY();
@@ -431,24 +431,24 @@ class StackedBarChartComponent extends BaseGraphComponent {
     var spaceY = rangeY/(labelCountY-1);
     var intervalY = (maxY - minY)/(labelCountY-1);
 
-    List<Element> texts = [];
+    List<String> texts = [];
     for (var i = 0; i < labelCountY; i++) {
-      texts.add(SvgElement.svg('<text x="${gridMinPxX - textMargin}" y="${gridMinPxY + spaceY*i}" style="font: $labelFontStyle;fill: $labelFillStyle;text-anchor: end;dominant-baseline: middle;">${labelFormatY(maxY - intervalY*i)}</text>'));
+      texts.add('<text x="${gridMinPxX - textMargin}" y="${gridMinPxY + spaceY*i}" style="font: $labelFontStyle;fill: $labelFillStyle;text-anchor: end;dominant-baseline: middle;">${labelFormatY(maxY - intervalY*i)}</text>');
     }
 
     if (labelCountX >= 2) {
       var i = 0;
       for (var x in keys) {
-        texts.add(SvgElement.svg('<text x="${labelMinPxX + spaceX*i}" y="${gridMaxPxY + textMargin}" style="font: $labelFontStyle;fill: $labelFillStyle;text-anchor: middle;dominant-baseline: text-top;">$x</text>'));
+        texts.add('<text x="${labelMinPxX + spaceX*i}" y="${gridMaxPxY + textMargin}" style="font: $labelFontStyle;fill: $labelFillStyle;text-anchor: middle;dominant-baseline: text-top;">$x</text>');
         i++;
       }
     } else {
       for (var x in keys) {
-        texts.add(SvgElement.svg('<text x="${(labelMaxPxX - labelMinPxX)/2}" y="${gridMaxPxY + textMargin}" style="font: $labelFontStyle;fill: $labelFillStyle;text-anchor: middle;dominant-baseline: hanging;">$x</text>'));
+        texts.add('<text x="${(labelMaxPxX - labelMinPxX)/2}" y="${gridMaxPxY + textMargin}" style="font: $labelFontStyle;fill: $labelFillStyle;text-anchor: middle;dominant-baseline: hanging;">$x</text>');
       }
     }
 
-    _labelElem.children.addAll(texts);
+    _labelElem.setHTMLUnsafe(texts.join().toJS);
   }
 
   @override

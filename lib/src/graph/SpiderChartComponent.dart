@@ -17,14 +17,12 @@ class SpiderChartComponent extends BaseGraphComponent {
   };
 
   Map<String, Map<String, double>> _dataPoints = {};
-  late final ResizeObserver _resizeObserver = ResizeObserver((entries, observer) {
-    redraw();
-  });
+  late final ResizeObserver _resizeObserver = ResizeObserver(_resizeObserverCallback.toJS);
 
-  SvgSvgElement get _svgElem => queryById('$id-svg') as SvgSvgElement;
-  GElement get _gridElem => queryById('$id-svg-grid') as GElement;
-  GElement get _labelElem => queryById('$id-svg-label') as GElement;
-  GElement get _pointsElem => queryById('$id-svg-points') as GElement;
+  SVGSVGElement get _svgElem => queryById('$id-svg') as SVGSVGElement;
+  SVGGElement get _gridElem => queryById('$id-svg-grid') as SVGGElement;
+  SVGGElement get _labelElem => queryById('$id-svg-label') as SVGGElement;
+  SVGGElement get _pointsElem => queryById('$id-svg-points') as SVGGElement;
 
   SpiderChartComponent(super.parent, super.id, {
     this.maxLabelWidth = 50,
@@ -52,6 +50,10 @@ class SpiderChartComponent extends BaseGraphComponent {
     ''';
   }
 
+  void _resizeObserverCallback(entries, observer) {
+    redraw();
+  }
+
   @override
   void onComponentAttached() {}
 
@@ -63,11 +65,11 @@ class SpiderChartComponent extends BaseGraphComponent {
   }
 
   void hideGraph(String graphId) {
-    (queryById('$id-$graphId') as GElement?)?.style.opacity = '0';
+    (queryById('$id-$graphId') as SVGGElement?)?.style.opacity = '0';
   }
 
   void showGraph(String graphId) {
-    (queryById('$id-$graphId') as GElement?)?.style.removeProperty('opacity');
+    (queryById('$id-$graphId') as SVGGElement?)?.style.removeProperty('opacity');
   }
 
   void redraw() {
@@ -78,16 +80,16 @@ class SpiderChartComponent extends BaseGraphComponent {
 
   @override
   void clearPoints() {
-    _pointsElem.children.clear();
+    _pointsElem.innerHTML = ''.toJS;
   }
 
   @override
   void drawDataPoints() {
-    _pointsElem.children.clear();
+    _pointsElem.innerHTML = ''.toJS;
     if (points == 0 || _dataPoints.isEmpty) return;
 
     for (var dpe in dataPoints.entries) {
-      var g = GElement();
+      var g = SVGGElement();
       g.id = '$id-${dpe.key}';
       g.style.transition = 'opacity 0.2s ease';
 
@@ -112,12 +114,12 @@ class SpiderChartComponent extends BaseGraphComponent {
 
       var pointStr = polygons.map((e) => e.join(' ')).join(', ');
       var fill = chartFillStyle[dpe.key] ?? chartFillStyle[keyAllGraph]!;
-      g.children.add(SvgElement.svg('<polygon points="$pointStr" fill="$fill" stroke-width="1" stroke="$fill" />'));
+      g.insertAdjacentHTML('beforeend', '<polygon points="$pointStr" fill="$fill" stroke-width="1" stroke="$fill" />'.toJS);
 
       var fillRgba = fill.rgba;
       for (var p in polygons) {
         var dotFill = Color.createRgba(fillRgba.r, fillRgba.g, fillRgba.b);
-        g.children.add(SvgElement.svg('<circle cx="${p[0]}" cy="${p[1]}" r="3" fill="$dotFill" />'));
+        g.insertAdjacentHTML('beforeend', '<circle cx="${p[0]}" cy="${p[1]}" r="3" fill="$dotFill" />'.toJS);
       }
 
       _pointsElem.children.add(g);
@@ -126,7 +128,7 @@ class SpiderChartComponent extends BaseGraphComponent {
 
   @override
   void drawGrid([bool drawY = true]) {
-    _gridElem.children.clear();
+    _gridElem.innerHTML = ''.toJS;
     if (points == 0) return;
 
     final radians = 2*pi/points.toDouble();
@@ -149,14 +151,14 @@ class SpiderChartComponent extends BaseGraphComponent {
       outerPolygons ??= polygons;
 
       var pointStr = polygons.map((e) => e.join(' ')).join(', ');
-      _gridElem.children.add(SvgElement.svg('<polygon points="$pointStr" stroke="$gridLineStrokeStyle" fill="none" stroke-width="$gridLineWidth" />'));
+      _gridElem.insertAdjacentHTML('beforeend', '<polygon points="$pointStr" stroke="$gridLineStrokeStyle" fill="none" stroke-width="$gridLineWidth" />'.toJS);
       gridR = gridR - pointIntervalRadiusWidth;
       if (gridR <= 10) break;
     }
 
     if (outerPolygons != null) {
       for (var p in outerPolygons) {
-        _gridElem.children.add(SvgElement.svg('<line x1="${r+dx}" y1="${r+dy}" x2="${p[0]}" y2="${p[1]}" stroke-width="$gridLineWidth" stroke="$gridLineStrokeStyle" />'));
+        _gridElem.insertAdjacentHTML('beforeend', '<line x1="${r+dx}" y1="${r+dy}" x2="${p[0]}" y2="${p[1]}" stroke-width="$gridLineWidth" stroke="$gridLineStrokeStyle" />'.toJS);
       }
     }
 
@@ -164,7 +166,7 @@ class SpiderChartComponent extends BaseGraphComponent {
 
   @override
   void drawLabels() {
-    _labelElem.children.clear();
+    _labelElem.innerHTML = ''.toJS;
     if (points == 0) return;
 
     final radians = 2*pi/points.toDouble();
@@ -190,15 +192,12 @@ class SpiderChartComponent extends BaseGraphComponent {
 
     }
 
-    var textElems = <SvgElement>[];
     var i = 0;
     for (var label in labels) {
       var p = polygons[i];
-      textElems.add(SvgElement.svg('<text x="${p[0]}" y="${p[1]}" style="font: $labelFontStyle;fill: $labelFillStyle;text-anchor: middle;dominant-baseline: middle;">$label</text>'));
+      _labelElem.insertAdjacentHTML('beforeend', '<text x="${p[0]}" y="${p[1]}" style="font: $labelFontStyle;fill: $labelFillStyle;text-anchor: middle;dominant-baseline: middle;">$label</text>'.toJS);
       i++;
     }
-
-    _labelElem.children.addAll(textElems);
   }
 
   @override
