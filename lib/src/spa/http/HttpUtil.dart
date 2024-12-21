@@ -67,7 +67,7 @@ class HttpUtil {
   }
 
   static Future<HttpUtilResponse> patch(String url, {String? body, List<int> expectedStatusCodes = const [200], Map<String, String> requestHeaders = const {}, String responseType = '', OnProgressFunc? onProgress, OnProgressFunc? uploadOnProgress, http.Client? client}) async {
-    var req = http.Request('GET', Uri.parse(url));
+    var req = http.Request('PATCH', Uri.parse(url));
     if (body != null) req.body = body;
 
     var c = client ?? http.Client();
@@ -138,7 +138,7 @@ class HttpUtil {
   }
 
   static Future<HttpUtilResponse> put(String url, {String? body, List<int> expectedStatusCodes = const [200], Map<String, String> requestHeaders = const {}, String responseType = '', OnProgressFunc? onProgress, OnProgressFunc? uploadOnProgress, http.Client? client}) async {
-    var req = http.Request('GET', Uri.parse(url));
+    var req = http.Request('PUT', Uri.parse(url));
     if (body != null) req.body = body;
 
     var c = client ?? http.Client();
