@@ -1,6 +1,6 @@
 name: spa
 description: PotatoBeans SPA framework.
-version: 2.0.0-alpha.3
+version: 2.0.0-alpha.4
 
 environment:
   sdk: '>=3.6.0 <4.0.0'

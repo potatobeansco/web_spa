@@ -78,7 +78,7 @@ abstract class Component {
   @protected
   set baseInnerHtml(String baseInnerHtml) {
     var template = document.createElement('template') as HTMLTemplateElement;
-    template.setHTMLUnsafe(baseInnerHtml.trim().toJS);
+    template.innerHTML = baseInnerHtml.trim().toJS;
     _baseInnerElement = template.content.children.item(0);
     if (_baseInnerElement!.id != id) {
       throw ComponentNoIdException(id);

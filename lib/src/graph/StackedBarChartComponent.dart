@@ -448,7 +448,7 @@ class StackedBarChartComponent extends BaseGraphComponent {
       }
     }
 
-    _labelElem.setHTMLUnsafe(texts.join().toJS);
+    _labelElem.innerHTML = texts.join().toJS;
   }
 
   @override
