@@ -8,6 +8,20 @@ class HttpUtil {
   static const headerTypeJson = {'Content-Type': 'application/json'};
   static const headerContentTypeJson = {'Content-Type': 'application/json'};
 
+  static Future<HttpUtilResponse> head(String url, {List<int> expectedStatusCodes = const [200], Map<String, String> requestHeaders = const {}, http.Client? client}) async {
+    var req = http.Request('HEAD', Uri.parse(url));
+    req.headers.addAll(requestHeaders);
+
+    var c = client ?? http.Client();
+    var resp = await c.send(req);
+    var total = int.tryParse(resp.headers['Content-Length'] ?? '');
+    if (!expectedStatusCodes.contains(resp.statusCode)) {
+      throw HttpUtilUnexpectedException(HttpUtilResponse(resp.statusCode, utf8.decode(await resp.stream.toBytes(), allowMalformed: true), resp.headers['Content-Type'], total));
+    }
+
+    return HttpUtilResponse(resp.statusCode, null, resp.headers['Content-Type'], total);
+  }
+
   static Future<HttpUtilResponse> get(String url, {List<int> expectedStatusCodes = const [200], Map<String, String> requestHeaders = const {}, String responseType = '', OnProgressFunc? onProgress, http.Client? client}) async {
     var req = http.Request('GET', Uri.parse(url));
     req.headers.addAll(requestHeaders);
