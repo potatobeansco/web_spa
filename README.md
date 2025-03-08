@@ -2,113 +2,10 @@
 
 The PotatoBeans SPA framework is created to ease the development of a web
 application, while still retaining the vanilla HTML/CSS development workflow.
-Nowadays, as JavaScript frameworks continue to grow, we see less people develop
-a website using just pure HTML/CSS. People start to use reusable components,
-and then reusable design, which make the design of a web feels industrialized.
 
-When using reusable components, in HTML/CSS world, because an HTML element (tag)
-can have so many CSS properties, we end up overriding many of those CSS properties
-especially when the web design is complex. This happens using bootstrap, a
-mostly CSS framework. Creating columns is easy, until the design requires complex
-column design, we then start to override almost all styles created by bootstrap.
-If that's the case then why not throw bootstrap away completely?
-
-Because PotatoBeans never create a design that is industrialized (too common),
-and tailor each design to a specific need and style, PotatoBeans web design will
-never be not complex. The [potatobeans.id](https://potatobeans.id) website for
-example, use PowerPoint like slide design. This way we cannot just use `bootstrap`
-as we require even more CSS properties and media queries to control elements
-so that they fit in one view as there is no infinite vertical scroll. Also
-needed are animations that are built into many elements in the design, which makes
-it harder to use frameworks that do not support animations. We need
-custom-built elements and animations, almost all the time, but we still want to
-reuse components, and reduce overheads and write clean codes. JavaScript frameworks
-can achieve some of the points that we want.
-
-## Philosophy
-
-The PotatoBeans SPA framework was created so that we can use Dart cleanly for
-the web.
-
-### Why Use Dart
-
-Because we want to write clean code that is consistent and easy to read, we know
-that using pure JavaScript is not an option. This immediately throws jQuery away,
-although jQuery actually solves some of our problems. It provides a decent animation
-library, and do not introduce the need of too many industrialized components. It
-is not a framework, but a library. Because jQuery is so old we do not bother to
-look at it again anyway.
-
-TypeScript is an alternative. React and other frameworks are available in TypeScript.
-However, TypeScript still feels like JavaScript. It helps at some point but writing
-TypeScript in most cases still feels like writing JavaScript, only stricter.
-
-Dart on the other hand, provide a powerful feature: OOP. TypeScript already
-enhances the OOP capability of JavaScript, which is near non-exsistent, but Dart
-takes it even further and makes it feel like writing Java, which is consistent
-and strict. However, it does not make it feel like writing verbose codes, like
-Java, as it also supports some dynamic features JavaScript and other dynamic
-languages have. Therefore, it sits in the middle, providing benefits and best
-of both worlds. Unfortunately, during the first time we use Dart for web, which
-is 2018 for BIST League, the only framework available was AngularDart.
-
-### Why not React, Vue, Angular, and so on
-
-There are like, maybe, hundreds of JavaScript frameworks these days. They all
-offer too many overlapping features, which makes them harder to choose from.
-However, even using those frameworks we still are obligated to write HTML/CSS
-when we want to use custom components. It does not make too much difference in
-writing, only the style is different. In the end we can go back to the old,
-SSR (Server-side Rendering) days where we create a lot of HTML pages and
-CSS files. In the end it's still writing HTML and the corresponding CSS styles.
-Those frameworks however, have some other features like local storage, routers,
-MVC or MVVM mindset, and so on. React for example utilizes PopStateEvent to
-implement SPA routing so that you can change the URL without reloading the page.
-This is probably the only way to do this, so all frameworks may also use this way,
-including PotatoBeans SPA framework.
-
-Because the W3C and so many people continually enhance the capability of
-browser JavaScript, and Chrome and Mozilla have dominated the browser world,
-frameworks continue to follow their specifications. Browsers already provide a
-powerful way to manipulate HTML and CSS, which actually makes jQuery quite
-deprecated. The introduction of native `querySelector` *kinda* killed jQuery.
-Browser native DOM manipulation functions have become so powerful that we can
-actually make a complete web application without the help of any frameworks.
-However, it's a user interface that we are interacting with, using just low-level
-functions will create horrible codes. That is why frameworks like Electron, Qt,
-Java Swing, exists, to prevent you from writing bad frontend codes.
-
-Dart itself actually enhances the capability of native browser functions by
-adding some nice wrapper functions and classes. This further reduces the need of
-frameworks like AngularDart or React.js (that can't be used as it is not
-available in Dart, attempts have been made to port it to Dart though).
-
-### Why Bother Creating a Framework
-
-PotatoBeans SPA framework was not created to become a framework. It evolved from
-reusing codes when we tried to create a web application using pure Dart. We
-reuse codes and create libraries and abstractions, continue adding things. The
-framework was born in BIST League 2018 project, was enhanced a lot with inspirations
-from Flutter in ABSIS (2019), and was then production-ready in potatobeans.id (2020).
-It is enhanced even more with some more breaking changes in Capio project (2020).
-
-Because it was built from pure reusing codes (clean code) mindset, it is not
-designed to compete with other frameworks. It is designed to keep PotatoBeans
-frontend developers to write clean codes that follow many PotatoBeans cultures
-and conventions. It is designed to be simple and light, without too much overhead
-while still retaining the old pure HTML/CSS mindset. You create components by
-writing HTML/CSS like you used to be. Those components can be reused
-and controlled consistently. The PotatoBeans SPA framework also
-adds animation support, using CSS3 animations, which does not exist if we were
-to use pure Dart. Animation was the main driver of why this framework was born
-out of pure Dart for web. Animations were great using jQuery but not available in Dart.
-
-jQuery shaped the web. Many of jQuery features were eventually absorbed into
-the body of W3C specifications and become native in many frameworks. Animations
-unfortunately were not part of that. An effort to create reliable animation exists,
-but so far it's only available in Chrome, using WebAnimation API. That is why
-we create animations by using wrapper codes of CSS3 transitions. It feels like a hack,
-it is actually, but it's reliable and works in almost all modern browsers.
+This SPA framework is developed and maintained by PotatoBeans and is now available
+in Github. It is now published as open source as a way for PotatoBeans clients
+to use without having the codes to be distributed for each project.
 
 ## Architecture
 
@@ -828,7 +725,7 @@ components and render it on screen.
 
 ## Getting Started
 
-Start by importing spa.dart, which contains all the components needed for
+Start by importing this `spa` package, which contains all the components needed for
 the framework to work.
 
 ### Creating the HTML Page
@@ -960,23 +857,98 @@ class MainComponent extends RenderComponent {
 }
 ```
 
+## Contributing
+
+TBD
+
+## Philosophy
+
+The PotatoBeans SPA framework was created so that we can use Dart cleanly for
+the web.
+
+### Why Use Dart
+
+Because we want to write clean code that is consistent and easy to read, we know
+that using pure JavaScript is not an option. This immediately throws jQuery away,
+although jQuery actually solves some of our problems. It provides a decent animation
+library, and do not introduce the need of too many industrialized components.
+
+TypeScript is an alternative. React and other frameworks are available in TypeScript.
+However, TypeScript still feels like JavaScript. It helps at some point but writing
+TypeScript in most cases still feels like writing JavaScript, only stricter.
+
+Dart on the other hand, provide a powerful feature: OOP. TypeScript already
+enhances the OOP capability of JavaScript, which is near non-exsistent, but Dart
+takes it even further and makes it feel like writing Java, which is consistent
+and strict. However, it does not make it feel like writing verbose codes, like
+Java, as it also supports some dynamic features JavaScript and other dynamic
+languages have. Therefore, it sits in the middle, providing benefits and best
+of both worlds.
+
+### Why This Framework
+
+Because the W3C and so many people continually enhance the capability of
+browser JavaScript, and Chrome and Mozilla have dominated the browser world,
+frameworks continue to follow their specifications. Browsers already provide a
+powerful way to manipulate HTML and CSS, which actually makes jQuery quite
+deprecated.
+
+Browser native DOM manipulation functions have become so powerful that we can
+actually make a complete web application without the help of any frameworks.
+However, it's a user interface that we are interacting with, using just low-level
+functions will create horrible codes. That is why frameworks like Electron, Qt,
+Java Swing, exists, to prevent you from writing bad frontend codes.
+
+Dart itself actually enhances the capability of native browser functions by
+adding some nice wrapper functions and classes. This further reduces the need of
+frameworks like AngularDart or React.js (that can't be used as it is not
+available in Dart, attempts have been made to port it to Dart though).
+
+However, with how powerful JavaScript has become these days, Dart has provided
+JS Interop functions and has now rolled out `package:web`, a new web package
+implementation, deprecating `dart:html`. Through `package:web` (and previously
+`dart:html`), this simple framework provides a way to manipulate DOM elements.
+
+This (micro) framework has been created to aid with the structure of the HTML/JS
+codes. It does not interfere with the original way of writing vanilla HTML/JS.
+However, these codes are now "categorized" into components that you can create
+through this framework. For example, you may want to create a sidebar and thus
+create a SidebarComponent with this framework. All the HTML and interactions can
+be put in this component. Being an OOP language, SidebarComponent is a class, which
+can easily be used anywhere. With the combination of Dart, `package:web`, and this
+framework, we are able to better write HTML/JS codes with the original mindset, without
+having to learn about too many of new logic provided by a lot of modern frameworks these days.
+
+### Why Bother Creating a Framework
+
+PotatoBeans SPA framework was not created to become a framework. It evolved from
+reusing codes when we tried to create a web application using pure Dart. We
+reuse codes and create libraries and abstractions, continue adding things. The
+framework was born in an old project, was enhanced a lot with inspirations
+from Flutter in some projects, and was then production-ready in many projects and have been
+used in all of PotatoBeans projects nowadays.
+
+Because it was built from pure reusing codes (clean code) mindset, it is not
+designed to compete with other frameworks. It is originally designed to keep PotatoBeans
+frontend developers to write clean codes that follow many PotatoBeans cultures
+and conventions. It is designed to be simple and light, without too much overhead
+while still retaining the old pure HTML/CSS mindset. You create components by
+writing HTML/CSS like you used to be. Those components can be reused
+and controlled consistently. The PotatoBeans SPA framework also
+originally added animation support, using CSS3 animations, which did not exist if we were
+to use pure Dart. Animation was the main driver of why this framework was born
+out of pure Dart for web. Animations were great using jQuery but not available in Dart `dart:html`.
+
+jQuery shaped the web. Many of jQuery features were eventually absorbed into
+the body of W3C specifications and become native in many frameworks. Animations
+unfortunately were not part of that. An effort to create reliable animation exists,
+but so far it's only available in Chrome, using WebAnimation API. That is why
+we create animations by using wrapper codes of CSS3 transitions. It feels like a hack,
+it is actually, but it's reliable and works in almost all modern browsers.
+
 ## Future Improvements
 
 * A generic implementation/architecture of a controller, which exchanges and controls
   a view based on a model (like a router)
 * Have `UrlComponentRouter` also to also `/` URL (the root)
 * Better and cleaner event handling architecture
-
-## Legal and Acknowledgements
-
-Created from templates made available by Stagehand under a BSD-style
-[license](https://github.com/dart-lang/stagehand/blob/master/LICENSE).
-
-This repository was built by:
-* Sergio Ryan \[[sergioryan@potatobeans.id](mailto:sergioryan@potatobeans.id)]
-* Rika Dewi \[[rikadewi@potatobeans.id](mailto:rikadewi@potatobeans.id)]
-* Eka Novendra \[[novendraw@potatobeans.id](mailto:novendraw@potatobeans.id)]
-* Stefanus Ardi Mulia \[[stefanusardi@potatobeans.id](mailto:stefanusardi@potatobeans.id)]
-
-Copyright &copy; 2020 PotatoBeans Company (PT Padma Digital Indonesia).  
-All rights reserved.
