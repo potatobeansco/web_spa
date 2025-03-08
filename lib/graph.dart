@@ -7,7 +7,7 @@ import 'dart:math';
 
 import 'package:intl/intl.dart';
 import 'package:meta/meta.dart';
-import 'package:spa/spa.dart';
+import 'package:web_spa/spa.dart';
 import 'package:csslib/parser.dart';
 import 'package:web/web.dart';
 
