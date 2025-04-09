@@ -47,7 +47,7 @@ class PieChartComponent extends BaseGraphComponent {
     ''';
   }
 
-  void _resizeObserverCallback(entries, observer) {
+  void _resizeObserverCallback(JSArray entries, IntersectionObserver  observer) {
     redraw();
   }
 
