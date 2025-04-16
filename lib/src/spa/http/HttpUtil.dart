@@ -22,7 +22,7 @@ class HttpUtil {
     return HttpUtilResponse(resp.statusCode, null, resp.headers['Content-Type'], total);
   }
 
-  static Future<HttpUtilResponse> get(String url, {List<int> expectedStatusCodes = const [200], Map<String, String> requestHeaders = const {}, String responseType = '', OnProgressFunc? onProgress, http.Client? client}) async {
+  static Future<HttpUtilResponse> get(String url, {List<int> expectedStatusCodes = const [200], Map<String, String> requestHeaders = const {}, bool returnResponseAsBytes = false, OnProgressFunc? onProgress, http.Client? client}) async {
     var req = http.Request('GET', Uri.parse(url));
     req.headers.addAll(requestHeaders);
 
@@ -49,10 +49,15 @@ class HttpUtil {
     );
     var bytes = await completer.future;
     await subs.cancel();
+    
+    if (returnResponseAsBytes) {
+      return HttpUtilResponse(resp.statusCode, bytes, resp.headers['Content-Type'], total); 
+    }
+    
     return HttpUtilResponse(resp.statusCode, utf8.decode(bytes), resp.headers['Content-Type'], total);
   }
 
-  static Future<HttpUtilResponse> post(String url, {String? body, List<int> expectedStatusCodes = const [200], Map<String, String> requestHeaders = const {}, String responseType = '', OnProgressFunc? onProgress, OnProgressFunc? uploadOnProgress, http.Client? client}) async {
+  static Future<HttpUtilResponse> post(String url, {String? body, List<int> expectedStatusCodes = const [200], Map<String, String> requestHeaders = const {}, bool returnResponseAsBytes = false, OnProgressFunc? onProgress, OnProgressFunc? uploadOnProgress, http.Client? client}) async {
     var req = http.Request('POST', Uri.parse(url));
     req.headers.addAll(requestHeaders);
     if (body != null) req.body = body;
@@ -80,10 +85,15 @@ class HttpUtil {
     );
     var bytes = await completer.future;
     await subs.cancel();
+
+    if (returnResponseAsBytes) {
+      return HttpUtilResponse(resp.statusCode, bytes, resp.headers['Content-Type'], total);
+    }
+    
     return HttpUtilResponse(resp.statusCode, utf8.decode(bytes), resp.headers['Content-Type'], total);
   }
 
-  static Future<HttpUtilResponse> patch(String url, {String? body, List<int> expectedStatusCodes = const [200], Map<String, String> requestHeaders = const {}, String responseType = '', OnProgressFunc? onProgress, OnProgressFunc? uploadOnProgress, http.Client? client}) async {
+  static Future<HttpUtilResponse> patch(String url, {String? body, List<int> expectedStatusCodes = const [200], Map<String, String> requestHeaders = const {}, bool returnResponseAsBytes = false, OnProgressFunc? onProgress, OnProgressFunc? uploadOnProgress, http.Client? client}) async {
     var req = http.Request('PATCH', Uri.parse(url));
     req.headers.addAll(requestHeaders);
     if (body != null) req.body = body;
@@ -111,10 +121,15 @@ class HttpUtil {
     );
     var bytes = await completer.future;
     await subs.cancel();
+
+    if (returnResponseAsBytes) {
+      return HttpUtilResponse(resp.statusCode, bytes, resp.headers['Content-Type'], total);
+    }
+    
     return HttpUtilResponse(resp.statusCode, utf8.decode(bytes), resp.headers['Content-Type'], total);
   }
 
-  static Future<HttpUtilResponse> postFormData(String url, Map<String, String> fields, Map<String, File> files, {List<int> expectedStatusCodes = const [200], Map<String, String> requestHeaders = const {}, String responseType = '', OnProgressFunc? onProgress, OnProgressFunc? uploadOnProgress, http.Client? client}) async {
+  static Future<HttpUtilResponse> postFormData(String url, Map<String, String> fields, Map<String, File> files, {List<int> expectedStatusCodes = const [200], Map<String, String> requestHeaders = const {}, bool returnResponseAsBytes = false, OnProgressFunc? onProgress, OnProgressFunc? uploadOnProgress, http.Client? client}) async {
     var mFiles = <http.MultipartFile>[];
 
     for (var f in files.entries) {
@@ -153,10 +168,15 @@ class HttpUtil {
     );
     var bytes = await completer.future;
     await subs.cancel();
+
+    if (returnResponseAsBytes) {
+      return HttpUtilResponse(resp.statusCode, bytes, resp.headers['Content-Type'], total);
+    }
+    
     return HttpUtilResponse(resp.statusCode, utf8.decode(bytes), resp.headers['Content-Type'], total);
   }
 
-  static Future<HttpUtilResponse> put(String url, {String? body, List<int> expectedStatusCodes = const [200], Map<String, String> requestHeaders = const {}, String responseType = '', OnProgressFunc? onProgress, OnProgressFunc? uploadOnProgress, http.Client? client}) async {
+  static Future<HttpUtilResponse> put(String url, {String? body, List<int> expectedStatusCodes = const [200], Map<String, String> requestHeaders = const {}, bool returnResponseAsBytes = false, OnProgressFunc? onProgress, OnProgressFunc? uploadOnProgress, http.Client? client}) async {
     var req = http.Request('PUT', Uri.parse(url));
     req.headers.addAll(requestHeaders);
     if (body != null) req.body = body;
@@ -184,10 +204,15 @@ class HttpUtil {
     );
     var bytes = await completer.future;
     await subs.cancel();
+
+    if (returnResponseAsBytes) {
+      return HttpUtilResponse(resp.statusCode, bytes, resp.headers['Content-Type'], total);
+    }
+    
     return HttpUtilResponse(resp.statusCode, utf8.decode(bytes), resp.headers['Content-Type'], total);
   }
 
-  static Future<HttpUtilResponse> delete(String url, {List<int> expectedStatusCodes = const [200], Map<String, String> requestHeaders = const {}, String responseType = '', OnProgressFunc? onProgress, http.Client? client}) async {
+  static Future<HttpUtilResponse> delete(String url, {List<int> expectedStatusCodes = const [200], Map<String, String> requestHeaders = const {}, bool returnResponseAsBytes = false, OnProgressFunc? onProgress, http.Client? client}) async {
     var req = http.Request('DELETE', Uri.parse(url));
     req.headers.addAll(requestHeaders);
 
@@ -214,6 +239,11 @@ class HttpUtil {
     );
     var bytes = await completer.future;
     await subs.cancel();
+
+    if (returnResponseAsBytes) {
+      return HttpUtilResponse(resp.statusCode, bytes, resp.headers['Content-Type'], total);
+    }
+    
     return HttpUtilResponse(resp.statusCode, utf8.decode(bytes), resp.headers['Content-Type'], total);
   }
 }

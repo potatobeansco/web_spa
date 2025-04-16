@@ -5,6 +5,12 @@ All notable changes to this project will be documented in this file.
 The format is based on [Keep a Changelog](http://keepachangelog.com/)
 and this project adheres to [Semantic Versioning](http://semver.org/).
 
+## [2.0.0-alpha.7] - 2025-04-16
+
+### Added
+
+- returnResponseAsBytes boolean parameter, replacing responseType in HttpUtil methods, to return HttpUtilResponse with body set as Uint8List.
+
 ## [2.0.0-alpha.6] - 2025-04-09
 
 ### Fixed
