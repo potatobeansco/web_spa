@@ -1,6 +1,6 @@
 name: web_spa
 description: PotatoBeans SPA framework.
-version: 2.0.0-alpha.7
+version: 2.0.0-alpha.8
 repository: https://github.com/potatobeansco/web_spa
 
 environment:

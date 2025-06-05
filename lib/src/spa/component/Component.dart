@@ -40,7 +40,7 @@ abstract class Component {
   @nonVirtual
   String get baseInnerHtml {
     var wrapper = HTMLTemplateElement();
-    wrapper.children.add(_baseInnerElement!);
+    wrapper.appendChild(_baseInnerElement!);
     return wrapper.getHTML();
   }
 

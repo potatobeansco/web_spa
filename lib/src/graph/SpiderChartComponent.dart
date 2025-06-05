@@ -122,7 +122,7 @@ class SpiderChartComponent extends BaseGraphComponent {
         g.insertAdjacentHTML('beforeend', '<circle cx="${p[0]}" cy="${p[1]}" r="3" fill="$dotFill" />'.toJS);
       }
 
-      _pointsElem.children.add(g);
+      _pointsElem.appendChild(g);
     }
   }
 
