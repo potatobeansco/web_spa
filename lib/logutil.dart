@@ -5,19 +5,19 @@ import 'package:web/web.dart';
 
 class Log {
   static void debug(Object? arg) {
-    console.debug(arg?.toJSBox);
+    console.debug(arg?.toString().toJS);
   }
 
   static void info(Object? arg) {
-    console.info(arg?.toJSBox);
+    console.info(arg?.toString().toJS);
   }
 
   static void warn(Object? arg) {
-    console.warn(arg?.toJSBox);
+    console.warn(arg?.toString().toJS);
   }
 
   static void error(Object? arg) {
-    console.error(arg?.toJSBox);
+    console.error(arg?.toString().toJS);
   }
 }
 
@@ -25,18 +25,18 @@ mixin MLogging {
   String get className;
 
   void logDebug(Object? arg) {
-    Log.debug('[$className] $arg'.toJS);
+    Log.debug('[$className] $arg');
   }
 
   void logInfo(Object? arg) {
-    Log.info('[$className] $arg'.toJS);
+    Log.info('[$className] $arg');
   }
 
   void logWarn(Object? arg) {
-    Log.warn('[$className] $arg'.toJS);
+    Log.warn('[$className] $arg');
   }
 
   void logError(Object? arg) {
-    Log.error('[$className] $arg'.toJS);
+    Log.error('[$className] $arg');
   }
 }
