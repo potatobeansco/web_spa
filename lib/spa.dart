@@ -7,6 +7,7 @@ import 'dart:js_interop';
 import 'dart:math';
 import 'dart:typed_data';
 
+import 'package:async/async.dart';
 import 'package:web_spa/logutil.dart';
 import 'package:meta/meta.dart';
 import 'package:collection/collection.dart';

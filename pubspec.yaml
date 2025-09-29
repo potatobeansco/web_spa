@@ -1,20 +1,21 @@
 name: web_spa
 description: PotatoBeans SPA framework.
-version: 2.0.0-alpha.9
+version: 2.1.0-alpha.1
 repository: https://github.com/potatobeansco/web_spa
 
 environment:
-  sdk: '>=3.6.0 <4.0.0'
+  sdk: '>=3.7.0 <4.0.0'
 
 dependencies:
+  async: '^2.13.0'
   csslib: '^1.0.0'
   collection: '^1.19.0'
-  http: '^1.2.0'
-  http_parser: '^4.0.0'
+  http: '^1.5.0'
+  http_parser: '^4.1.0'
   intl: '^0.20.0'
-  meta: '^1.16.0'
+  meta: '^1.17.0'
   path: '^1.9.0'
-  web: '^1.1.0'
+  web: '1.1.1'
 
 dev_dependencies:
   lints: '>=5.0.0'
