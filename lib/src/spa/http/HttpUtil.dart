@@ -20,7 +20,6 @@ class HttpUtil {
     return CancelableOperation.fromFuture(
       () async {
         var resp = await c.send(req);
-        cpl.complete();
         var total = int.tryParse(resp.headers['Content-Length'] ?? '');
         if (!expectedStatusCodes.contains(resp.statusCode)) {
           throw HttpUtilUnexpectedException(
@@ -173,7 +172,6 @@ class HttpUtil {
     return CancelableOperation.fromFuture(
       () async {
         var resp = await c.send(req);
-        cpl.complete();
         var total = int.tryParse(resp.headers['Content-Length'] ?? '');
         if (!expectedStatusCodes.contains(resp.statusCode)) {
           throw HttpUtilUnexpectedException(
