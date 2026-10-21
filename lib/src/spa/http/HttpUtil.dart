@@ -260,6 +260,51 @@ class HttpUtil {
     ).value;
   }
 
+  static CancelableOperation<HttpUtilResponse> cancelableQuery(
+    String url, {
+    String? body,
+    List<int> expectedStatusCodes = const [200],
+    Map<String, String> requestHeaders = const {},
+    bool returnResponseAsBytes = false,
+    OnProgressFunc? onProgress,
+    OnProgressFunc? uploadOnProgress,
+    http.Client? client,
+  }) {
+    return _requestWithBody(
+      'QUERY',
+      url,
+      body: body,
+      expectedStatusCodes: expectedStatusCodes,
+      requestHeaders: requestHeaders,
+      returnResponseAsBytes: returnResponseAsBytes,
+      onProgress: onProgress,
+      uploadOnProgress: uploadOnProgress,
+      client: client,
+    );
+  }
+
+  static Future<HttpUtilResponse> query(
+    String url, {
+    String? body,
+    List<int> expectedStatusCodes = const [200],
+    Map<String, String> requestHeaders = const {},
+    bool returnResponseAsBytes = false,
+    OnProgressFunc? onProgress,
+    OnProgressFunc? uploadOnProgress,
+    http.Client? client,
+  }) {
+    return cancelableQuery(
+      url,
+      body: body,
+      expectedStatusCodes: expectedStatusCodes,
+      requestHeaders: requestHeaders,
+      returnResponseAsBytes: returnResponseAsBytes,
+      onProgress: onProgress,
+      uploadOnProgress: uploadOnProgress,
+      client: client,
+    ).value;
+  }
+
   static CancelableOperation<HttpUtilResponse> cancelablePatch(
     String url, {
     String? body,
